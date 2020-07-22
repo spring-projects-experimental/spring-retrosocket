@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.joshlong.rsocket.client.RSocketClientAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.springframework.retrosocket.RSocketClientAutoConfiguration
