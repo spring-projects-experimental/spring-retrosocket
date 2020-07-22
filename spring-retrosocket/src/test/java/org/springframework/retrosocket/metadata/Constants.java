@@ -2,6 +2,9 @@ package org.springframework.retrosocket.metadata;
 
 import org.springframework.util.MimeType;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 class Constants {
 
 	public static final String CLIENT_ID_HEADER = "client-id";

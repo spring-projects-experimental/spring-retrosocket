@@ -10,8 +10,17 @@ import org.springframework.util.SocketUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @Log4j2
 public class RSocketClientTest {
+
+	private static ConfigurableApplicationContext runService(int port) {
+		return new SpringApplicationBuilder(RSocketServerConfiguration.class)//
+				.web(WebApplicationType.NONE)
+				.run("--spring.profiles.active=service", "--spring.rsocket.server.port=" + port);
+	}
 
 	@Test
 	public void monoInAndOut() {
@@ -26,12 +35,6 @@ public class RSocketClientTest {
 				.verifyComplete();
 		client.stop();
 		service.stop();
-	}
-
-	private static ConfigurableApplicationContext runService(int port) {
-		return new SpringApplicationBuilder(RSocketServerConfiguration.class)//
-				.web(WebApplicationType.NONE)
-				.run("--spring.profiles.active=service", "--spring.rsocket.server.port=" + port);
 	}
 
 	private ConfigurableApplicationContext runClient(int port) {

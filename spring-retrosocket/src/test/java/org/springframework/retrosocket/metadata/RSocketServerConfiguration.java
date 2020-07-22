@@ -10,6 +10,9 @@ import org.springframework.core.codec.StringDecoder;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @Log4j2
 @Profile("service")
 @Configuration
