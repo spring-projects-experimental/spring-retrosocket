@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @Log4j2
 @Profile("service")
 @Configuration

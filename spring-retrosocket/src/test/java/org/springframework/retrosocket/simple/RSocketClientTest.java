@@ -15,6 +15,10 @@ import reactor.test.StepVerifier;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
+
 @Log4j2
 public class RSocketClientTest {
 

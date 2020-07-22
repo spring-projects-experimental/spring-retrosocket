@@ -13,6 +13,9 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @Log4j2
 @Profile("service")
 @Controller

@@ -7,6 +7,9 @@ import org.springframework.retrosocket.RSocketClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ */
 @RSocketClient
 interface GreetingClient {
 
