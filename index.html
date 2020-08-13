@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<meta name="author" content="Josh Long">
+<meta name="author" content="Josh Long, Mario Gray">
 <title>Spring Retrosocket 0.0.1-SNAPSHOT reference guide</title>
 <link rel="stylesheet" href="css/spring.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
@@ -15,18 +15,17 @@
 <h1>Spring Retrosocket 0.0.1-SNAPSHOT reference guide</h1>
 <div class="details">
 <span id="author" class="author">Josh Long</span><br>
+<span id="email" class="email"><a href="http://twitter.com/starbuxman" class="bare">twitter.com/starbuxman</a></span><br>
+<span id="author2" class="author">Mario Gray</span><br>
+<span id="email2" class="email"><a href="http://twitter.com/MarioGray" class="bare">twitter.com/MarioGray</a></span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#inspiration">1. Inspiration</a></li>
-<li><a href="#_build_the_code">2. Build the Code</a></li>
-<li><a href="#_usage">3. Usage</a></li>
-<li><a href="#_mapping_headers_rsocket_metadata_to_the_rsocket_request">4. Mapping Headers (RSocket metadata) to the RSocket request</a>
-<ul class="sectlevel2">
-<li><a href="#_pairing_code_rsocketrequesters_code_to_code_rsocketclient_code_interfaces">4.1. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</a></li>
-</ul>
-</li>
+<li><a href="#building-the-code">1. Build the Code</a></li>
+<li><a href="#basic-usage">2. Basic Usage</a></li>
+<li><a href="#mapping-headers-to-metadata">3. Mapping Headers (RSocket metadata) to the RSocket request</a></li>
+<li><a href="#multiple-rsocket-requesters">4. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</a></li>
 <li><a href="#_contact_us">5. Contact us</a></li>
 </ul>
 </div>
@@ -40,16 +39,7 @@
 </div>
 </div>
 <div class="sect1">
-<h2 id="inspiration"><a class="anchor" href="#inspiration"></a>1. Inspiration</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>It&#8217;d be nice to have easy Feign-like RSocket clients. This is a thing <a href="http://github.com/Mario5Gray">@Mario5Gray</a> has talked about,
-and it seems like a great idea. So here it is.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_build_the_code"><a class="anchor" href="#_build_the_code"></a>2. Build the Code</h2>
+<h2 id="building-the-code"><a class="anchor" href="#building-the-code"></a>1. Build the Code</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Build the code:</p>
@@ -70,7 +60,7 @@ and it seems like a great idea. So here it is.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_usage"><a class="anchor" href="#_usage"></a>3. Usage</h2>
+<h2 id="basic-usage"><a class="anchor" href="#basic-usage"></a>2. Basic Usage</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the <code>snapshot</code> or  <code>milestone</code>
@@ -132,7 +122,7 @@ interface GreetingClient {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_mapping_headers_rsocket_metadata_to_the_rsocket_request"><a class="anchor" href="#_mapping_headers_rsocket_metadata_to_the_rsocket_request"></a>4. Mapping Headers (RSocket metadata) to the RSocket request</h2>
+<h2 id="mapping-headers-to-metadata"><a class="anchor" href="#mapping-headers-to-metadata"></a>3. Mapping Headers (RSocket metadata) to the RSocket request</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You can map <code>@Header</code> elements to parameters in the method invocation. The header parameters get sent as composite RSocket metadata. Normal invocations of RSocket metadata would require two parts - a mime type and a value tht can be encoded. The encoding is a separate issue - Spring ships with a ton of encoders/decoders out of the box, but by default Spring Framework&#8217;s built in support uses something called <code>CBOR</code>. There is still the question of how to communicate the mimetype. We expect the mime-type to be specified as the <code>value()</code> attribute for the <code>@Header</code> annotation. Thus:</p>
@@ -157,8 +147,11 @@ interface GreetingClient {
 <div class="paragraph">
 <p>This needs to line up with the expectations for composite metadata on the responder side of course.</p>
 </div>
-<div class="sect2">
-<h3 id="_pairing_code_rsocketrequesters_code_to_code_rsocketclient_code_interfaces"><a class="anchor" href="#_pairing_code_rsocketrequesters_code_to_code_rsocketclient_code_interfaces"></a>4.1. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="multiple-rsocket-requesters"><a class="anchor" href="#multiple-rsocket-requesters"></a>4. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>You can annotate your interfaces with a <code>@Qualifier</code> annotation (or a meta-annotated qualifier of your own making ) and then annotate an <code>RSocketRequester</code> and this module will use that <code>RSocketRequester</code> when servicing methods on a particular interface.</p>
 </div>
@@ -213,7 +206,6 @@ class RSocketClientConfiguration {
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
 <h2 id="_contact_us"><a class="anchor" href="#_contact_us"></a>5. Contact us</h2>
 <div class="sectionbody">
@@ -225,7 +217,7 @@ class RSocketClientConfiguration {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-13 07:11:23 UTC
+Last updated 2020-08-13 07:17:43 UTC
 </div>
 </div>
 <script type="text/javascript" src="js/tocbot/tocbot.min.js"></script>
