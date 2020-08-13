@@ -1,12 +1,6 @@
 = Spring Retrosocket
 
-
-
 image:https://github.com/spring-projects-experimental/spring-retrosocket/workflows/Spring%20Retrosocket%20build/badge.svg["Build Status"] 
-
-
-
-<img src="https://github.com/spring-projects-experimental/spring-retrosocket/workflows/Spring%20Retrosocket%20build/badge.svg"/>
 
 Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative http://RSocket.io[RSocket]-based clients.
 
