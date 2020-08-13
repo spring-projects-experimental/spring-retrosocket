@@ -40,7 +40,9 @@ jobs:
           GHP=$HOME/ghp 
           GD=$HOME/gd 
           rm -rf $GHP
-          rm -rf $GD
+          rm -rf $GD  
+          git config --global user.email "retrosocket-docs@spring.io"
+          git config --global user.name "Retrosocket Docs"
           cp -r spring-retrosocket-docs/target/generated-docs/ $GD
           git clone https://${GH_USERNAME}:${GH_PASSWORD}@github.com/spring-projects-experimental/spring-retrosocket.git -b gh-pages $GHP
           cp -r $GD/* $GHP
