@@ -2,6 +2,10 @@
 
 Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative http://RSocket.io[RSocket]-based clients.
 
+## Documentation
+
+You can find the much more complete https://spring-projects-experimental.github.io/spring-retrosocket/[documentation here].
+
 == GitHub issues
 
 We choose not to use GitHub issues for general usage questions and support, preferring to use issues solely for the tracking of bugs and enhancements. If you have a general usage question please do not open a http://github.com/spring-projects-experimental/spring-retrosocket[GitHub issue], but use one of the other channels described below.
@@ -64,10 +68,6 @@ interface GreetingClient {
 You can then inject a reference to `GreetingClient` anywhere in your code and use it to issue requests of the RSocket-based service.
 If you invoke methods on this interface it’ll in turn issue requests to RSocket endpoints using the single configured `RSocketRequester` instance in the Spring context for you,
 turning destination variables into route variables, headers into metadata, and the payload into the data for the request.
-
-## Documentation
-
-You can find https://spring-projects-experimental.github.io/spring-retrosocket/[the documentation here].
 
 ## License
 
