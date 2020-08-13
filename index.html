@@ -23,10 +23,11 @@
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#building-the-code">1. Build the Code</a></li>
-<li><a href="#basic-usage">2. Basic Usage</a></li>
-<li><a href="#mapping-headers-to-metadata">3. Mapping Headers (RSocket metadata) to the RSocket request</a></li>
-<li><a href="#multiple-rsocket-requesters">4. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</a></li>
-<li><a href="#_contact_us">5. Contact us</a></li>
+<li><a href="#your-build">2. Configuring Your Build</a></li>
+<li><a href="#basic-usage">3. Basic Usage</a></li>
+<li><a href="#mapping-headers-to-metadata">4. Mapping Headers (RSocket metadata) to the RSocket request</a></li>
+<li><a href="#multiple-rsocket-requesters">5. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</a></li>
+<li><a href="#_contact_us">6. Contact us</a></li>
 </ul>
 </div>
 </div>
@@ -60,7 +61,7 @@
 </div>
 </div>
 <div class="sect1">
-<h2 id="basic-usage"><a class="anchor" href="#basic-usage"></a>2. Basic Usage</h2>
+<h2 id="your-build"><a class="anchor" href="#your-build"></a>2. Configuring Your Build</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the <code>snapshot</code> or  <code>milestone</code>
@@ -97,6 +98,11 @@ dependencies and then add the following to your build.</p>
  &lt;/repositories&gt;</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="basic-usage"><a class="anchor" href="#basic-usage"></a>3. Basic Usage</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>In your Java code, you need to enable the RSocket client support. Use the <code>@EnableRSocketClient</code> annotation. You&#8217;ll also need to define an <code>RSocketRequester</code> bean.</p>
 </div>
@@ -144,7 +150,7 @@ interface GreetingClient {
 </div>
 </div>
 <div class="sect1">
-<h2 id="mapping-headers-to-metadata"><a class="anchor" href="#mapping-headers-to-metadata"></a>3. Mapping Headers (RSocket metadata) to the RSocket request</h2>
+<h2 id="mapping-headers-to-metadata"><a class="anchor" href="#mapping-headers-to-metadata"></a>4. Mapping Headers (RSocket metadata) to the RSocket request</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You can map <code>@Header</code> elements to parameters in the method invocation. The header parameters get sent as composite RSocket metadata. Normal invocations of RSocket metadata would require two parts - a mime type and a value that can be encoded. The encoding is a separate issue - Spring ships with a ton of encoders/decoders out of the box, but by default, Spring Framework&#8217;s built-in support uses something called <code>CBOR</code>. There is still the question of how to communicate the mime-type. We expect the mime-type as the <code>value()</code> attribute for the <code>@Header</code> annotation. Thus:</p>
@@ -172,7 +178,7 @@ interface GreetingClient {
 </div>
 </div>
 <div class="sect1">
-<h2 id="multiple-rsocket-requesters"><a class="anchor" href="#multiple-rsocket-requesters"></a>4. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</h2>
+<h2 id="multiple-rsocket-requesters"><a class="anchor" href="#multiple-rsocket-requesters"></a>5. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>You can annotate your interfaces with a <code>@Qualifier</code> annotation (or a meta-annotated qualifier of your own making ) and then annotate an <code>RSocketRequester</code>. This module will use that <code>RSocketRequester</code> when servicing methods on a particular interface.</p>
@@ -229,7 +235,7 @@ class RSocketClientConfiguration {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_contact_us"><a class="anchor" href="#_contact_us"></a>5. Contact us</h2>
+<h2 id="_contact_us"><a class="anchor" href="#_contact_us"></a>6. Contact us</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Did you not find what you sought? We&#8217;re happy to help! We&#8217;re always available on the Github Issues section for this repository.</p>
@@ -239,7 +245,7 @@ class RSocketClientConfiguration {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-13 07:37:57 UTC
+Last updated 2020-08-13 07:43:43 UTC
 </div>
 </div>
 <script type="text/javascript" src="js/tocbot/tocbot.min.js"></script>
