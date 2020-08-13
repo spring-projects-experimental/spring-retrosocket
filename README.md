@@ -1,6 +1,5 @@
 # Spring Retrosocket
 
-
 Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative [RSocket](http://RSocket.io)-based clients.
 
 ## GitHub issues
@@ -66,8 +65,11 @@ turning destination variables into route variables, headers into metadata, and t
 
 ## Documentation 
 
-For more detailed information on this project, see
- [the documentation](https://repo.spring.io/snapshot/org/springframework/retrosocket/spring-retrosocket-docs/0.0.1-SNAPSHOT/spring-retrosocket-docs-0.0.1-20200813.045202-1.zip!/reference/index.html). 
+For more detailed information on this project, go to this folder 
+[the documentation](https://repo.spring.io/snapshot/org/springframework/retrosocket/spring-retrosocket-docs/0.0.1-SNAPSHOT/), find the most recent file ending with `.zip`, and then add `!/reference/index.html` to the full URI for that `.zip`. 
+This will bring up the documentation. Here is [an example](https://repo.spring.io/snapshot/org/springframework/retrosocket/spring-retrosocket-docs/0.0.1-SNAPSHOT/spring-retrosocket-docs-0.0.1-20200813.051516-4.zip!/reference/index.html).
+
+
 
 ## License
 
