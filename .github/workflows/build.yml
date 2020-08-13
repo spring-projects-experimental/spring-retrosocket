@@ -32,3 +32,16 @@ jobs:
 
       - name: Build the application and deploy
         run: mvn -Pspring,docs -s .github/workflows/maven-settings.xml deploy
+
+      - name: Deploy the documentation to Github Pages 
+        run: |
+          cp -r spring-retrosocket-docs/target/generated-docs/ ~/generated-docs 
+          git checkout gh-pages 
+          rm -rf ./*
+          cp -r ~/generated-docs/* .
+          git add * 
+          git commit -am "adding docs..."
+          git push origin gh-pages 
+
+
+        
