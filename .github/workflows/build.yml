@@ -35,13 +35,19 @@ jobs:
 
       - name: Deploy the documentation to Github Pages 
         run: |
+          GHP=$HOME/ghp 
+          rm -rf $GHP
+          rm -rf ~/generated-docs
           cp -r spring-retrosocket-docs/target/generated-docs/ ~/generated-docs 
-          git checkout gh-pages 
-          rm -rf ./*
-          cp -r ~/generated-docs/* .
+          
+          git clone git@github.com:spring-projects-experimental/spring-retrosocket.git -b gh-pages  $GHP
+          rm -rf $GHP/*
+          cp -r ~/generated-docs/* $GHP
+          cd $GHP
           git add * 
           git commit -am "adding docs..."
           git push origin gh-pages 
+          
 
 
         
