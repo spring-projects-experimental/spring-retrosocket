@@ -78,8 +78,8 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		Assert.state(beanFactory instanceof ListableBeanFactory,
-				() -> "the BeanFactory is not an instance of a ListableBeanFactory");
+		Assert.state(beanFactory instanceof ListableBeanFactory, () -> "the " + BeanFactory.class.getName()
+				+ " is not an instance of a " + ListableBeanFactory.class.getName());
 		this.context = (ListableBeanFactory) beanFactory;
 	}
 

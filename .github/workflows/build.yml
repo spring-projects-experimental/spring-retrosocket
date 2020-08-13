@@ -1,0 +1,35 @@
+name: Spring Retrosocket build
+
+
+env:
+  ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET }}
+  CI_USERNAME: ${{ secrets.CI_USERNAME }}
+  CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build the application and deploy
+        run: mvn -s .github/workflows/maven-settings.xml deploy
