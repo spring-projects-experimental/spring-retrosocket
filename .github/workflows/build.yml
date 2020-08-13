@@ -33,7 +33,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build the application and deploy
-        run: mvn -Pspring,docs -Dasciidoctor.attributes=foo=baz -s .github/workflows/maven-settings.xml deploy
+        run: mvn -Pspring,docs -Dasciidoctor.attributes="foo=baz foo2=baz2" -s .github/workflows/maven-settings.xml deploy
 
       - name: Deploy the documentation to Github Pages 
         run: |
