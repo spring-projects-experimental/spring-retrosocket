@@ -31,8 +31,10 @@ It's early days yet, so there may be some build breaks. Skip the tests if needed
 mvn -DskipTests=true clean install
 ```
 
-[[basic-usage]]
-== Basic Usage
+
+[[your-build]]
+== Configuring Your Build
+
 
 The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the `snapshot` or  `milestone`
 dependencies and then add the following to your build.
@@ -68,6 +70,10 @@ If you have an existing build, make sure that you have the `snapshot` or `milest
     </repository>
   </repositories>
 ----
+
+
+[[basic-usage]]
+== Basic Usage
 
 
 In your Java code, you need to enable the RSocket client support. Use the `@EnableRSocketClient` annotation. You'll also need to define an `RSocketRequester` bean.
