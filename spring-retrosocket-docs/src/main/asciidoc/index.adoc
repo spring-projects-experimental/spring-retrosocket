@@ -4,18 +4,20 @@
 :icons: font
 :hide-uri-scheme:
 :project-home: https://github.com/spring-projects-experimental/spring-retrosocket
-:version: 0.0.1-SNAPSHOT
-:repository: snapshot
-:boot-version: 2.3.1.RELEASE
+:github-repository: https://github.com/spring-projects-experimental/spring-retrosocket
 
-= Spring Retrosocket {version} reference guide
+
+= Spring Retrosocket {version} Reference Guide
 Josh Long <http://twitter.com/starbuxman>; Mario Gray <http://twitter.com/MarioGray>
 
+
 [[introduction]]
-Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative http://RSocket.io[RSocket]-based clients. This guide introduces Retrosocket functionality and their uses.
+Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative http://rsocket.io[RSocket]-based clients. This guide introduces Retrosocket functionality and their uses.
 
 [[building-the-code]]
 == Build the Code
+
+You can find the {github-repository}[code on Github].
 
 Build the code:
 
@@ -36,8 +38,7 @@ mvn -DskipTests=true clean install
 == Configuring Your Build
 
 
-The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the `snapshot` or  `milestone`
-dependencies and then add the following to your build.
+The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the `spring-milestones` or  `spring-snapshots` repositories defined in your build. Add the following to your build, taking care to replace `$PROJECT-VERSION` with the correct version of the library. The latest is **{project-version}**. This version has been built against Spring Boot **{spring-boot-version}**.
 
 
 [source,xml,indent=0]
@@ -45,7 +46,7 @@ dependencies and then add the following to your build.
 <dependency>
     <groupId>org.springframework.retrosocket</groupId>
     <artifactId>spring-retrosocket</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>$PROJECT-VERSION</version>
 </dependency>
 ----
 

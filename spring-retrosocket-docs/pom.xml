@@ -91,10 +91,19 @@
                                     <goal>process-asciidoc</goal>
                                 </goals>
                                 <configuration>
+
+                                    
+
                                     <backend>html5</backend>
                                     <sourceHighlighter>highlight.js</sourceHighlighter>
                                     <attributes>
+                                        
 
+                                        <project-version>${project.version}</project-version>
+                                        <spring-boot-version>${spring-boot.version}</spring-boot-version>
+
+
+                                        <!--  -->
                                         <docinfo>shared</docinfo>
                                         <stylesdir>css/</stylesdir>
                                         <stylesheet>spring.css</stylesheet>
@@ -126,6 +135,12 @@
                             <sourceDocumentName>index.adoc</sourceDocumentName>
                             <doctype>book</doctype>
                             <attributes>
+                                
+                                <project-version>${project.version}</project-version>
+                                <spring-boot-version>${spring-boot.version}</spring-boot-version>
+
+
+
                                 <version>${project.version}</version>
                                 <projectName>${project.name}</projectName>
                                 <projectVersion>${project.version}</projectVersion>

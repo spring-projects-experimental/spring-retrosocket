@@ -134,7 +134,6 @@
                 </plugins>
             </build>
             <properties>
-
                 <maven-deploy-plugin.deployZipUrl>https://repo.spring.io/libs-release-local
                 </maven-deploy-plugin.deployZipUrl>
             </properties>
