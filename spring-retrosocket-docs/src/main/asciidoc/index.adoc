@@ -7,7 +7,7 @@
 :github-repository: https://github.com/spring-projects-experimental/spring-retrosocket
 
 
-= Spring Retrosocket {version} Reference Guide
+= Spring Retrosocket {project-version} Reference Guide
 Josh Long <http://twitter.com/starbuxman>; Mario Gray <http://twitter.com/MarioGray>
 
 
