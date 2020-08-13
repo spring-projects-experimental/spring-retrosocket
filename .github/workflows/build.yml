@@ -4,6 +4,8 @@ name: Spring Retrosocket build
 env:
   CI_USERNAME: ${{ secrets.CI_USERNAME }}
   CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
+  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}  
+  GH_USERNAME: ${{ secrets.GH_USERNAME }}  
 
 on:
   push:
@@ -36,18 +38,17 @@ jobs:
       - name: Deploy the documentation to Github Pages 
         run: |
           GHP=$HOME/ghp 
+          GD=$HOME/gd 
           rm -rf $GHP
-          rm -rf ~/generated-docs
-          cp -r spring-retrosocket-docs/target/generated-docs/ ~/generated-docs 
-          
-          git clone git@github.com:spring-projects-experimental/spring-retrosocket.git -b gh-pages  $GHP
-          rm -rf $GHP/*
-          cp -r ~/generated-docs/* $GHP
+          rm -rf $GD
+          cp -r spring-retrosocket-docs/target/generated-docs/ $GD
+          git clone https://${GH_USERNAME}:${GH_PASSWORD}@github.com/spring-projects-experimental/spring-retrosocket.git -b gh-pages $GHP
+          cp -r $GD/* $GHP
           cd $GHP
           git add * 
           git commit -am "adding docs..."
           git push origin gh-pages 
-          
+
 
 
         
