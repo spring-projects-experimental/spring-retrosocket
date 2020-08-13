@@ -50,7 +50,7 @@ The easiest way might be to go to the Spring Initializr and generate a new proje
 </dependency>
 ----
 
-If you have an existing build, make sure that you have the `snapshot` or `milestone` Spring repositories.
+If you have an existing build, make sure that you have the  `spring-milestones` or  `spring-snapshots`  Spring repositories.
 
 
 [source,xml,indent=0]
