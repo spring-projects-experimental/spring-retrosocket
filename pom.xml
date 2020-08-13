@@ -14,6 +14,14 @@
             scm:git:ssh://git@github.com/spring-projects-experimental/spring-retrosocket.git
         </developerConnection>
     </scm>
+    <contributors>
+        <contributor>
+            <name>Josh Long</name>
+            <email>josh@joshlong.com</email>
+            <url>http://spring.io/team/jlong</url>
+            <timezone>PST</timezone>
+        </contributor>
+    </contributors>
     <organization>
         <name>Pivotal Software, Inc.</name>
         <url>https://www.spring.io</url>
