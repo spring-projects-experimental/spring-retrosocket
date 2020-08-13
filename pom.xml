@@ -134,6 +134,7 @@
                 </plugins>
             </build>
             <properties>
+
                 <maven-deploy-plugin.deployZipUrl>https://repo.spring.io/libs-release-local
                 </maven-deploy-plugin.deployZipUrl>
             </properties>
@@ -148,9 +149,7 @@
                 </repository>
             </distributionManagement>
             <properties>
-
-                <maven-deploy-plugin.deployZipUrl>https://repo.spring.io/libs-milestone-local
-                </maven-deploy-plugin.deployZipUrl>
+                <maven-deploy-plugin.deployZipUrl>https://repo.spring.io/libs-milestone-local</maven-deploy-plugin.deployZipUrl>
             </properties>
         </profile>
     </profiles>
@@ -180,6 +179,8 @@
         </dependency>
     </dependencies>
     <properties>
+        <docs.resources.version>0.2.1.RELEASE</docs.resources.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -188,6 +189,7 @@
     </properties>
     <modules>
         <module>spring-retrosocket</module>
+        <module>spring-retrosocket-docs</module>
         <!-- <module>spring-retrosocket-samples</module> -->
     </modules>
     <dependencyManagement>

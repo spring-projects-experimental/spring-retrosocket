@@ -32,4 +32,4 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build the application and deploy
-        run: mvn -s .github/workflows/maven-settings.xml deploy
+        run: mvn -Pspring,docs -s .github/workflows/maven-settings.xml deploy
