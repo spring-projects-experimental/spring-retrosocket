@@ -151,8 +151,7 @@
                                 <configuration>
                                     <tasks>
                                         <zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
-                                            <zipfileset dir="${project.build.directory}/generated-docs"
-                                                        prefix="reference"/>
+                                                <zipfileset dir="${project.build.directory}/generated-docs" prefix="reference"/>
                                         </zip>
                                     </tasks>
                                 </configuration>

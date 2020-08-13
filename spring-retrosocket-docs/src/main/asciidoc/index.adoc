@@ -47,6 +47,28 @@ dependencies and then add the following to your build.
 </dependency>
 ----
 
+If you have an existing build, make sure that you have the `snapshot` or `milestone` Spring repositories.
+
+
+[source,xml,indent=0]
+----
+ <repositories>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+    </repository>
+    <repository>
+      <id>spring-snapshots</id>
+      <name>Spring Snapshots</name>
+      <url>https://repo.spring.io/snapshot</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+----
+
 
 In your Java code, you need to enable the RSocket client support. Use the `@EnableRSocketClient` annotation. You'll also need to define an `RSocketRequester` bean.
 
