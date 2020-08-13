@@ -34,7 +34,7 @@
 <div id="preamble">
 <div class="sectionbody">
 <div id="introduction" class="paragraph">
-<p>This guide walks you through the various options for building GraalVM native images for your Spring Boot applications.</p>
+<p>Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative <a href="http://RSocket.io">RSocket</a>-based clients. This guide introduces Retrosocket functionality and their uses.</p>
 </div>
 </div>
 </div>
@@ -50,7 +50,7 @@
 </div>
 </div>
 <div class="paragraph">
-<p>It&#8217;s early days yet so there may be some build breaks. Skip the tests if needed:</p>
+<p>It&#8217;s early days yet, so there may be some build breaks. Skip the tests if needed:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -76,7 +76,7 @@ dependencies and then add the following to your build.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>In your Java code you need to enable the RSocket client support. Use the <code>@EnableRSocketClient</code> annotation. You&#8217;ll also need to define an <code>RSocketRequester</code> bean.</p>
+<p>In your Java code, you need to enable the RSocket client support. Use the <code>@EnableRSocketClient</code> annotation. You&#8217;ll also need to define an <code>RSocketRequester</code> bean.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -117,7 +117,7 @@ interface GreetingClient {
 </div>
 </div>
 <div class="paragraph">
-<p>If you invoke methods on this interface it&#8217;ll in turn invoke endpoints using the configured <code>RSocketRequester</code> for you, turning destination variables into route variables and turning your payload into the data for the request.</p>
+<p>If you invoke methods on this interface, it&#8217;ll, in turn, invoke endpoints using the configured <code>RSocketRequester</code> for you, turning destination variables into route variables and turning your payload into the data for the request.</p>
 </div>
 </div>
 </div>
@@ -125,7 +125,7 @@ interface GreetingClient {
 <h2 id="mapping-headers-to-metadata"><a class="anchor" href="#mapping-headers-to-metadata"></a>3. Mapping Headers (RSocket metadata) to the RSocket request</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can map <code>@Header</code> elements to parameters in the method invocation. The header parameters get sent as composite RSocket metadata. Normal invocations of RSocket metadata would require two parts - a mime type and a value tht can be encoded. The encoding is a separate issue - Spring ships with a ton of encoders/decoders out of the box, but by default Spring Framework&#8217;s built in support uses something called <code>CBOR</code>. There is still the question of how to communicate the mimetype. We expect the mime-type to be specified as the <code>value()</code> attribute for the <code>@Header</code> annotation. Thus:</p>
+<p>You can map <code>@Header</code> elements to parameters in the method invocation. The header parameters get sent as composite RSocket metadata. Normal invocations of RSocket metadata would require two parts - a mime type and a value that can be encoded. The encoding is a separate issue - Spring ships with a ton of encoders/decoders out of the box, but by default, Spring Framework&#8217;s built-in support uses something called <code>CBOR</code>. There is still the question of how to communicate the mime-type. We expect the mime-type as the <code>value()</code> attribute for the <code>@Header</code> annotation. Thus:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -145,7 +145,7 @@ interface GreetingClient {
 </div>
 </div>
 <div class="paragraph">
-<p>This needs to line up with the expectations for composite metadata on the responder side of course.</p>
+<p>This method definition should line up with the expectations for composite metadata on the responder side, of course.</p>
 </div>
 </div>
 </div>
@@ -153,10 +153,10 @@ interface GreetingClient {
 <h2 id="multiple-rsocket-requesters"><a class="anchor" href="#multiple-rsocket-requesters"></a>4. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>You can annotate your interfaces with a <code>@Qualifier</code> annotation (or a meta-annotated qualifier of your own making ) and then annotate an <code>RSocketRequester</code> and this module will use that <code>RSocketRequester</code> when servicing methods on a particular interface.</p>
+<p>You can annotate your interfaces with a <code>@Qualifier</code> annotation (or a meta-annotated qualifier of your own making ) and then annotate an <code>RSocketRequester</code>. This module will use that <code>RSocketRequester</code> when servicing methods on a particular interface.</p>
 </div>
 <div class="paragraph">
-<p>The following demonstrates the concept in action. RSocket connections are stateful. Once they&#8217;ve connected, they stay connected and all subsequent interactions are assumed to be against the already established connection. Therefore, each <code>RSocketRequester</code> talks to a different logical (and physical) service, unlike, e.g., a <code>WebClient</code> which may be used to talk to any arbitrary host and port.</p>
+<p>The following demonstrates the concept in action. RSocket connections are stateful. Once they&#8217;ve connected, they stay connected, and all subsequent interactions are assumed to be against the already established connection. Therefore, each <code>RSocketRequester</code> talks to a different logical (and physical) service, unlike, e.g., a <code>WebClient</code>, which may you may use to talk to any arbitrary host and port.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -210,14 +210,14 @@ class RSocketClientConfiguration {
 <h2 id="_contact_us"><a class="anchor" href="#_contact_us"></a>5. Contact us</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Not finding what you&#8217;re looking for? We&#8217;re happy to help! We&#8217;re always available on the Github Issues section for this repository.</p>
+<p>Did you not find what you sought? We&#8217;re happy to help! We&#8217;re always available on the Github Issues section for this repository.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-13 07:18:45 UTC
+Last updated 2020-08-13 07:25:11 UTC
 </div>
 </div>
 <script type="text/javascript" src="js/tocbot/tocbot.min.js"></script>
