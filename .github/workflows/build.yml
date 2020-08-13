@@ -2,7 +2,6 @@ name: Spring Retrosocket build
 
 
 env:
-  ARTIFACTORY_API_TOKEN_SECRET: ${{ secrets.ARTIFACTORY_API_TOKEN_SECRET }}
   CI_USERNAME: ${{ secrets.CI_USERNAME }}
   CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
 
