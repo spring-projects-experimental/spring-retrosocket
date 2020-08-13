@@ -69,6 +69,6 @@ You can then inject a reference to `GreetingClient` anywhere in your code and us
 If you invoke methods on this interface, it’ll in turn issue requests to RSocket endpoints using the single configured `RSocketRequester` instance in the Spring context for you,
 turning destination variables into route variables, headers into metadata, and the payload into the data for the request.
 
-## License
+== License
 
 This code is licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
