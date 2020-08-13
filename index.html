@@ -76,6 +76,28 @@ dependencies and then add the following to your build.</p>
 </div>
 </div>
 <div class="paragraph">
+<p>If you have an existing build, make sure that you have the <code>snapshot</code> or <code>milestone</code> Spring repositories.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;repositories&gt;
+   &lt;repository&gt;
+     &lt;id&gt;spring-milestones&lt;/id&gt;
+     &lt;name&gt;Spring Milestones&lt;/name&gt;
+     &lt;url&gt;https://repo.spring.io/milestone&lt;/url&gt;
+   &lt;/repository&gt;
+   &lt;repository&gt;
+     &lt;id&gt;spring-snapshots&lt;/id&gt;
+     &lt;name&gt;Spring Snapshots&lt;/name&gt;
+     &lt;url&gt;https://repo.spring.io/snapshot&lt;/url&gt;
+     &lt;snapshots&gt;
+       &lt;enabled&gt;true&lt;/enabled&gt;
+     &lt;/snapshots&gt;
+   &lt;/repository&gt;
+ &lt;/repositories&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>In your Java code, you need to enable the RSocket client support. Use the <code>@EnableRSocketClient</code> annotation. You&#8217;ll also need to define an <code>RSocketRequester</code> bean.</p>
 </div>
 <div class="listingblock">
@@ -217,7 +239,7 @@ class RSocketClientConfiguration {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-13 07:25:38 UTC
+Last updated 2020-08-13 07:33:27 UTC
 </div>
 </div>
 <script type="text/javascript" src="js/tocbot/tocbot.min.js"></script>
