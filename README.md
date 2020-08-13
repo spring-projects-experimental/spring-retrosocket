@@ -6,12 +6,27 @@ It'd be nice to have easy Feign-like RSocket clients. This is a thing [@Mario5Gr
 
 ## Installation
 
+Build the code: 
+
+
+```shell
+mvn clean install 
+```
+
+It's early days yet so there may be some build breaks. Skip the tests if needed: 
+
+
+```shell
+mvn -DskipTests=true clean install 
+```
+
+
 Add the following dependency to your build: 
 
 ```xml
 <dependency>
-    <groupId>com.joshlong.rsocket</groupId>
-    <artifactId>client</artifactId>
+    <groupId>org.springframework.retrosocket</groupId>
+    <artifactId>spring-retrosocket</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 </dependency>
 ```
@@ -37,7 +52,7 @@ then, define an RSocket client interface, like this:
 
 
 @RSocketClient
-public interface GreetingClient {
+interface GreetingClient {
 
 	@MessageMapping("supplier")
 	Mono<GreetingResponse> greet();
