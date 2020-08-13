@@ -6,13 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
 <meta name="author" content="Josh Long, Mario Gray">
-<title>Spring Retrosocket 0.0.1-SNAPSHOT reference guide</title>
+<title>Spring Retrosocket 0.0.1-SNAPSHOT Reference Guide</title>
 <link rel="stylesheet" href="css/spring.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 </head>
 <body class="book toc2 toc-left">
 <div id="header">
-<h1>Spring Retrosocket 0.0.1-SNAPSHOT reference guide</h1>
+<h1>Spring Retrosocket 0.0.1-SNAPSHOT Reference Guide</h1>
 <div class="details">
 <span id="author" class="author">Josh Long</span><br>
 <span id="email" class="email"><a href="http://twitter.com/starbuxman" class="bare">twitter.com/starbuxman</a></span><br>
@@ -35,13 +35,16 @@
 <div id="preamble">
 <div class="sectionbody">
 <div id="introduction" class="paragraph">
-<p>Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative <a href="http://RSocket.io">RSocket</a>-based clients. This guide introduces Retrosocket functionality and their uses.</p>
+<p>Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative <a href="http://rsocket.io">RSocket</a>-based clients. This guide introduces Retrosocket functionality and their uses.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="building-the-code"><a class="anchor" href="#building-the-code"></a>1. Build the Code</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>You can find the <a href="https://github.com/spring-projects-experimental/spring-retrosocket">code on Github</a>.</p>
+</div>
 <div class="paragraph">
 <p>Build the code:</p>
 </div>
@@ -64,15 +67,14 @@
 <h2 id="your-build"><a class="anchor" href="#your-build"></a>2. Configuring Your Build</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the <code>snapshot</code> or  <code>milestone</code>
-dependencies and then add the following to your build.</p>
+<p>The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the <code>spring-milestones</code> or  <code>spring-snapshots</code> repositories defined in your build. Add the following to your build, taking care to replace <code>$PROJECT-VERSION</code> with the correct version of the library. The latest is <strong>0.0.1-SNAPSHOT</strong>. This version has been built against Spring Boot <strong>2.3.1.RELEASE</strong>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
     &lt;groupId&gt;org.springframework.retrosocket&lt;/groupId&gt;
     &lt;artifactId&gt;spring-retrosocket&lt;/artifactId&gt;
-    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;version&gt;$PROJECT-VERSION&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -245,7 +247,7 @@ class RSocketClientConfiguration {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-13 07:43:43 UTC
+Last updated 2020-08-13 08:26:26 UTC
 </div>
 </div>
 <script type="text/javascript" src="js/tocbot/tocbot.min.js"></script>
