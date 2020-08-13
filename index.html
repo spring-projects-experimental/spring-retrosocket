@@ -1,1 +1,237 @@
-<h1> Hello </h1> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.6.1">
+<meta name="author" content="Josh Long">
+<title>Spring Retrosocket 0.0.1-SNAPSHOT reference guide</title>
+<link rel="stylesheet" href="css/spring.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Spring Retrosocket 0.0.1-SNAPSHOT reference guide</h1>
+<div class="details">
+<span id="author" class="author">Josh Long</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#inspiration">1. Inspiration</a></li>
+<li><a href="#_build_the_code">2. Build the Code</a></li>
+<li><a href="#_usage">3. Usage</a></li>
+<li><a href="#_mapping_headers_rsocket_metadata_to_the_rsocket_request">4. Mapping Headers (RSocket metadata) to the RSocket request</a>
+<ul class="sectlevel2">
+<li><a href="#_pairing_code_rsocketrequesters_code_to_code_rsocketclient_code_interfaces">4.1. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</a></li>
+</ul>
+</li>
+<li><a href="#_contact_us">5. Contact us</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div id="introduction" class="paragraph">
+<p>This guide walks you through the various options for building GraalVM native images for your Spring Boot applications.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="inspiration"><a class="anchor" href="#inspiration"></a>1. Inspiration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It&#8217;d be nice to have easy Feign-like RSocket clients. This is a thing <a href="http://github.com/Mario5Gray">@Mario5Gray</a> has talked about,
+and it seems like a great idea. So here it is.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_build_the_code"><a class="anchor" href="#_build_the_code"></a>2. Build the Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Build the code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mvn clean install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s early days yet so there may be some build breaks. Skip the tests if needed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell hljs" data-lang="shell">mvn -DskipTests=true clean install</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>3. Usage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The easiest way might be to go to the Spring Initializr and generate a new project. Make sure that you specify the <code>snapshot</code> or  <code>milestone</code>
+dependencies and then add the following to your build.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.retrosocket&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-retrosocket&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In your Java code you need to enable the RSocket client support. Use the <code>@EnableRSocketClient</code> annotation. You&#8217;ll also need to define an <code>RSocketRequester</code> bean.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@SpringBootApplication
+@EnableRSocketClient
+class RSocketClientApplication {
+
+ @Bean
+ RSocketRequester requester(RSocketRequester.Builder builder) {
+  return builder.connectTcp("localhost", 8888).block();
+ }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then, define an RSocket client interface, like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@RSocketClient
+interface GreetingClient {
+
+	@MessageMapping("supplier")
+	Mono&lt;GreetingResponse&gt; greet();
+
+	@MessageMapping("request-response")
+	Mono&lt;GreetingResponse&gt; requestResponse(Mono&lt;String&gt; name);
+
+	@MessageMapping("fire-and-forget")
+	Mono&lt;Void&gt; fireAndForget(Mono&lt;String&gt; name);
+
+	@MessageMapping("destination.variables.and.payload.annotations.{name}.{age}")
+	Mono&lt;String&gt; greetMonoNameDestinationVariable(
+            @DestinationVariable("name") String name,
+	    @DestinationVariable("age") int age,
+            @Payload Mono&lt;String&gt; payload);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you invoke methods on this interface it&#8217;ll in turn invoke endpoints using the configured <code>RSocketRequester</code> for you, turning destination variables into route variables and turning your payload into the data for the request.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mapping_headers_rsocket_metadata_to_the_rsocket_request"><a class="anchor" href="#_mapping_headers_rsocket_metadata_to_the_rsocket_request"></a>4. Mapping Headers (RSocket metadata) to the RSocket request</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can map <code>@Header</code> elements to parameters in the method invocation. The header parameters get sent as composite RSocket metadata. Normal invocations of RSocket metadata would require two parts - a mime type and a value tht can be encoded. The encoding is a separate issue - Spring ships with a ton of encoders/decoders out of the box, but by default Spring Framework&#8217;s built in support uses something called <code>CBOR</code>. There is still the question of how to communicate the mimetype. We expect the mime-type to be specified as the <code>value()</code> attribute for the <code>@Header</code> annotation. Thus:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import com.joshlong.rsocket.client.RSocketClient;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import reactor.core.publisher.Mono;
+
+@RSocketClient
+interface GreetingClient {
+
+	@MessageMapping("greetings")
+	Mono&lt;String&gt; greet(@Header( "messaging/x.bootiful.client-id") String clientId, @Payload Mono&lt;String&gt; name);
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This needs to line up with the expectations for composite metadata on the responder side of course.</p>
+</div>
+<div class="sect2">
+<h3 id="_pairing_code_rsocketrequesters_code_to_code_rsocketclient_code_interfaces"><a class="anchor" href="#_pairing_code_rsocketrequesters_code_to_code_rsocketclient_code_interfaces"></a>4.1. Pairing <code>RSocketRequesters</code> to <code>@RSocketClient</code> interfaces</h3>
+<div class="paragraph">
+<p>You can annotate your interfaces with a <code>@Qualifier</code> annotation (or a meta-annotated qualifier of your own making ) and then annotate an <code>RSocketRequester</code> and this module will use that <code>RSocketRequester</code> when servicing methods on a particular interface.</p>
+</div>
+<div class="paragraph">
+<p>The following demonstrates the concept in action. RSocket connections are stateful. Once they&#8217;ve connected, they stay connected and all subsequent interactions are assumed to be against the already established connection. Therefore, each <code>RSocketRequester</code> talks to a different logical (and physical) service, unlike, e.g., a <code>WebClient</code> which may be used to talk to any arbitrary host and port.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@RSocketClient
+@Qualifier(Constants.QUALIFIER_2)
+interface GreetingClient {
+
+	@MessageMapping("greetings-with-name")
+	Mono&lt;Greeting&gt; greet(Mono&lt;String&gt; name);
+
+}
+
+@RSocketClient
+@PersonQualifier
+interface PersonClient {
+
+	@MessageMapping("people")
+	Flux&lt;Person&gt; people();
+
+}
+
+@EnableRSocketClients
+@SpringBootApplication
+class RSocketClientConfiguration {
+
+	@Bean
+	@PersonQualifier // meta-annotation
+	// @Qualifier(Constants.QUALIFIER_1)
+	RSocketRequester one(@Value("${" + Constants.QUALIFIER_1 + ".port}") int port, RSocketRequester.Builder builder) {
+		return builder.connectTcp("localhost", port).block();
+	}
+
+
+	@Bean
+	@Qualifier(Constants.QUALIFIER_2) // direct-annotation
+	RSocketRequester two(@Value("${" + Constants.QUALIFIER_2 + ".port}") int port, RSocketRequester.Builder builder) {
+		return builder.connectTcp("localhost", port).block();
+	}
+}
+
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER })
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier(Constants.QUALIFIER_1)
+@interface PersonQualifier {
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_contact_us"><a class="anchor" href="#_contact_us"></a>5. Contact us</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Not finding what you&#8217;re looking for? We&#8217;re happy to help! We&#8217;re always available on the Github Issues section for this repository.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2020-08-13 07:00:56 UTC
+</div>
+</div>
+<script type="text/javascript" src="js/tocbot/tocbot.min.js"></script>
+<script type="text/javascript" src="js/toc.js"></script>
+<link rel="stylesheet" href="js/highlight/styles/github.min.css">
+<script src="js/highlight/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
+</body>
+</html>
