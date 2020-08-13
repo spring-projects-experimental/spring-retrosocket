@@ -2,15 +2,15 @@
 
 Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative http://RSocket.io[RSocket]-based clients.
 
-## Documentation
+== Documentation
 
 You can find the much more complete https://spring-projects-experimental.github.io/spring-retrosocket/[documentation here].
 
 == GitHub issues
 
-We choose not to use GitHub issues for general usage questions and support, preferring to use issues solely for the tracking of bugs and enhancements. If you have a general usage question please do not open a http://github.com/spring-projects-experimental/spring-retrosocket[GitHub issue], but use one of the other channels described below.
+We choose not to use GitHub issues for general usage questions and support, preferring to use Issues solely to track bugs and enhancements. If you have a general usage question, please do not open a http://github.com/spring-projects-experimental/spring-retrosocket[GitHub issue], but use one of the other channels described below.
 
-If you are reporting a bug, please help to speed up problem diagnosis by providing as much information as possible. Ideally, that would include a small sample project that reproduces the problem.
+If you are reporting a bug, please help speed up problem diagnosis by providing as much information as possible. Ideally, that would include a small sample project that reproduces the problem.
 
 == Getting Started
 
@@ -26,7 +26,7 @@ The easiest way might be to go to the Spring Initializr and generate a new proje
 ----
 
 
-In your Java code you need to enable the RSocket client support. Use the `@EnableRSocketClient` annotation on a `@Configuration` class. You’ll also need to define an `RSocketRequester` bean.
+In your Java code, you need to enable the RSocket client support. Use the `@EnableRSocketClient` annotation on a `@Configuration` class. You’ll also need to define an `RSocketRequester` bean.
 
 [source,java]
 ----
@@ -65,8 +65,8 @@ interface GreetingClient {
 }
 ----
 
-You can then inject a reference to `GreetingClient` anywhere in your code and use it to issue requests of the RSocket-based service.
-If you invoke methods on this interface it’ll in turn issue requests to RSocket endpoints using the single configured `RSocketRequester` instance in the Spring context for you,
+You can then inject a reference to `GreetingClient` anywhere in your code and use it to issue the RSocket-based service requests.
+If you invoke methods on this interface, it’ll in turn issue requests to RSocket endpoints using the single configured `RSocketRequester` instance in the Spring context for you,
 turning destination variables into route variables, headers into metadata, and the payload into the data for the request.
 
 ## License
