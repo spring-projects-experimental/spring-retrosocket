@@ -26,6 +26,28 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 
 	private ListableBeanFactory context;
 
+	private String host;
+
+	private String port;
+
+	private RequesterMode mode;
+
+	private RSocketRequester rSocketRequester() {
+		if (mode == RequesterMode.PAIRING) {
+			return forInterface(type, context);
+		} else {
+			Assert.isTrue(host.length()!=0, "In MANAGED mode host should be provided");
+			Assert.isTrue(port.length()!=0, "In MANAGED mode port should be provided");
+			return requesterBuilder()
+					.connectTcp(host, Integer.parseInt(port))
+					.block();
+		}
+	}
+
+	private RSocketRequester.Builder requesterBuilder() {
+		return context.getBean(RSocketRequester.Builder.class);
+	}
+
 	private static RSocketRequester forInterface(Class<?> clientInterface, ListableBeanFactory context) {
 		Map<String, RSocketRequester> rSocketRequestersInContext = context.getBeansOfType(RSocketRequester.class);
 		int rSocketRequestersCount = rSocketRequestersInContext.size();
@@ -66,7 +88,7 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 
 	@Override
 	public Object getObject() {
-		RSocketRequester rSocketRequester = forInterface(this.type, this.context);
+		RSocketRequester rSocketRequester = rSocketRequester();
 		RSocketClientBuilder clientBuilder = this.context.getBean(RSocketClientBuilder.class);
 		return clientBuilder.buildClientFor(this.type, rSocketRequester);
 	}
@@ -82,5 +104,18 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 				+ " is not an instance of a " + ListableBeanFactory.class.getName());
 		this.context = (ListableBeanFactory) beanFactory;
 	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public void setMode(RequesterMode mode) {
+		this.mode = mode;
+	}
+
 
 }

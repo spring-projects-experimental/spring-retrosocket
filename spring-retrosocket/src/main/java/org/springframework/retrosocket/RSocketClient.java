@@ -10,5 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 public @interface RSocketClient {
-
+  String  host() default "";
+  String  port() default "";
+  RequesterMode mode() default RequesterMode.PAIRING;
 }
