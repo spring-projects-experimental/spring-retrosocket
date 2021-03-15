@@ -1,0 +1,56 @@
+name: Spring Retrosocket build
+
+
+env:
+  CI_USERNAME: ${{ secrets.CI_USERNAME }}
+  CI_PASSWORD: ${{ secrets.CI_PASSWORD }}
+  GH_PASSWORD: ${{ secrets.GH_PASSWORD }}  
+  GH_USERNAME: ${{ secrets.GH_USERNAME }}  
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build the application and deploy
+        run: mvn -Pspring,docs -Dasciidoctor.attributes="foo=baz foo2=baz2" -s .github/workflows/maven-settings.xml deploy
+
+      - name: Deploy the documentation to Github Pages 
+        run: |
+          GHP=$HOME/ghp 
+          GD=$HOME/gd 
+          rm -rf $GHP
+          rm -rf $GD  
+          git config --global user.email "retrosocket-docs@spring.io"
+          git config --global user.name "Retrosocket Docs"
+          cp -r spring-retrosocket-docs/target/generated-docs/ $GD
+          git clone https://${GH_USERNAME}:${GH_PASSWORD}@github.com/spring-projects-experimental/spring-retrosocket.git -b gh-pages $GHP
+          cp -r $GD/* $GHP
+          cd $GHP
+          git add * 
+          git commit -am "adding docs..."
+          git push origin gh-pages 
+
+
+
+        
