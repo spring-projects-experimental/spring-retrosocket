@@ -1,5 +1,6 @@
 package org.springframework.retrosocket;
 
+import java.lang.annotation.Annotation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,9 @@ public class RSocketClientBuilder {
 			payloadArgument = Mono.empty();
 		}
 		else if (arguments.length == 1) {
-			payloadArgument = arguments[0];
+      Annotation[] annotations = parameters[0].getAnnotations();
+      Annotation[] payloadAnnotations = parameters[0].getAnnotationsByType(Payload.class);
+      payloadArgument = annotations.length == 0 || payloadAnnotations.length == 1 ? arguments[0] : Mono.empty();
 		}
 		else {
 			Assert.isTrue(parameters.length == arguments.length,
