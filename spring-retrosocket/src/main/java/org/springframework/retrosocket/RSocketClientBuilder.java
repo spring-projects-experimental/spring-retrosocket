@@ -2,6 +2,7 @@ package org.springframework.retrosocket;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.core.ResolvableType;
@@ -24,9 +25,9 @@ import java.util.*;
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
-@Log4j2
+@Slf4j
 @RequiredArgsConstructor
-class RSocketClientBuilder {
+public class RSocketClientBuilder {
 
 	private static Object[] findDestinationVariables(Object[] arguments, Parameter[] parameters) {
 		List<Object> destinationVariableValues = new ArrayList<>();
