@@ -28,7 +28,8 @@ class GreetingsController {
 	}
 
 	@MessageMapping("greetings-mono-name.{name}")
-	Mono<String> greetMonoNameDestinationVariable(@DestinationVariable("name") String name, @Payload Mono<String> payload) {
+	Mono<String> greetMonoNameDestinationVariable(@DestinationVariable("name") String name,
+			@Payload Mono<String> payload) {
 		log.info("name=" + name);
 		return payload;
 	}

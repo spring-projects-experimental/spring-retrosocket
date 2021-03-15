@@ -1,8 +1,6 @@
 package org.springframework.retrosocket;
 
-import java.lang.annotation.Annotation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.aop.framework.ProxyFactoryBean;
@@ -19,9 +17,13 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -48,9 +50,9 @@ public class RSocketClientBuilder {
 			payloadArgument = Mono.empty();
 		}
 		else if (arguments.length == 1) {
-      Annotation[] annotations = parameters[0].getAnnotations();
-      Annotation[] payloadAnnotations = parameters[0].getAnnotationsByType(Payload.class);
-      payloadArgument = annotations.length == 0 || payloadAnnotations.length == 1 ? arguments[0] : Mono.empty();
+			Annotation[] annotations = parameters[0].getAnnotations();
+			Annotation[] payloadAnnotations = parameters[0].getAnnotationsByType(Payload.class);
+			payloadArgument = annotations.length == 0 || payloadAnnotations.length == 1 ? arguments[0] : Mono.empty();
 		}
 		else {
 			Assert.isTrue(parameters.length == arguments.length,

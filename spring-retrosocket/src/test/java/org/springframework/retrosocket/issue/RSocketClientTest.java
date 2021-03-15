@@ -27,8 +27,7 @@ public class RSocketClientTest {
 
 	@BeforeAll
 	public static void begin() {
-		serviceApplicationContext = new SpringApplicationBuilder(
-        RSocketServerConfiguration.class)//
+		serviceApplicationContext = new SpringApplicationBuilder(RSocketServerConfiguration.class)//
 				.web(WebApplicationType.NONE)
 				.run("--spring.profiles.active=service", "--spring.rsocket.server.port=" + port.get());
 	}
@@ -44,11 +43,10 @@ public class RSocketClientTest {
 		Mono<String> greetingResponseFlux = greetingClient.greetMonoWithOnlyOneDestinationVariable("jlong");
 		StepVerifier//
 				.create(greetingResponseFlux)//
-				.consumeNextWith(s-> {
+				.consumeNextWith(s -> {
 					assertThat(s).isNotEqualTo("jslong");
 					assertThat(s).isEmpty();
-				})
-				.verifyComplete();
+				}).verifyComplete();
 	}
 
 	@Test
@@ -57,13 +55,11 @@ public class RSocketClientTest {
 		Mono<String> greetingResponseFlux = greetingClient.greetMonoWithOnlyOnePayload(Mono.just("Hello, world!"));
 		StepVerifier//
 				.create(greetingResponseFlux)//
-				.expectNext("Hello, world!")
-				.verifyComplete();
+				.expectNext("Hello, world!").verifyComplete();
 	}
 
 	private GreetingClient buildClient() {
-		ConfigurableApplicationContext context = new SpringApplicationBuilder(
-        RSocketClientConfiguration.class)//
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(RSocketClientConfiguration.class)//
 				.web(WebApplicationType.NONE)//
 				.run("--service.port=" + port.get(), "--spring.profiles.active=client");
 		return context.getBean(GreetingClient.class);

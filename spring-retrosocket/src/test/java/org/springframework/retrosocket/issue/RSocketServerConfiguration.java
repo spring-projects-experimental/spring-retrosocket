@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
 class RSocketServerConfiguration {
 
 	@Bean
-  GreetingsController greetingsController() {
+	GreetingsController greetingsController() {
 		return new GreetingsController();
 	}
 

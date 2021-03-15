@@ -12,10 +12,10 @@ import reactor.core.publisher.Mono;
 @RSocketClient
 interface GreetingClient {
 
-  @MessageMapping("greetings-mono-name.{name}")
-  Mono<String> greetMonoWithOnlyOneDestinationVariable(@DestinationVariable("name") String name);
+	@MessageMapping("greetings-mono-name.{name}")
+	Mono<String> greetMonoWithOnlyOneDestinationVariable(@DestinationVariable("name") String name);
 
-  @MessageMapping("greetings-mono-name")
-  Mono<String> greetMonoWithOnlyOnePayload(@Payload Mono<String> payload);
+	@MessageMapping("greetings-mono-name")
+	Mono<String> greetMonoWithOnlyOnePayload(@Payload Mono<String> payload);
 
 }
