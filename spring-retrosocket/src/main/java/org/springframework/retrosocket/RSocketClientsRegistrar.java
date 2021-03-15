@@ -84,7 +84,9 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 				.forEach(beanDefinition -> {
 					AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
 					this.validateInterface(annotationMetadata);
-					this.registerRSocketClient(annotationMetadata, registry);
+					Map<String, Object> attributes = annotationMetadata
+							.getAnnotationAttributes(RSocketClient.class.getCanonicalName());
+					this.registerRSocketClient(annotationMetadata, registry, attributes);
 				}));
 	}
 
@@ -121,7 +123,8 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 	}
 
 	@SneakyThrows
-	private void registerRSocketClient(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
+	private void registerRSocketClient(AnnotationMetadata annotationMetadata,
+			BeanDefinitionRegistry registry, Map<String, Object> attributes) {
 		String className = annotationMetadata.getClassName();
 		if (log.isDebugEnabled()) {
 			log.debug("trying to turn the interface " + className + " into an RSocketClientFactoryBean");
@@ -129,6 +132,9 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(RSocketClientFactoryBean.class);
 		definition.addPropertyValue("type", className);
+		definition.addPropertyValue("host", getHost(attributes));
+		definition.addPropertyValue("port", getAttribute(attributes, "port"));
+		definition.addPropertyValue("mode", getAttribute(attributes, "mode"));
 		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 
 		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
@@ -137,6 +143,21 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[0]);
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+	}
+
+	private <T>T getAttribute(Map<String, Object> attributes, String name) {
+		return (T) attributes.get(name);
+	}
+
+	private String getHost(Map<String, Object> attributes) {
+		return resolve((String) attributes.get("host"));
+	}
+
+	private String resolve(String value) {
+		if (StringUtils.hasText(value)) {
+			return this.environment.resolvePlaceholders(value);
+		}
+		return value;
 	}
 
 	@Override

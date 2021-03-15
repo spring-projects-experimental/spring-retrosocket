@@ -14,7 +14,6 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 class RSocketClientAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBean(RSocketRequester.class)
 	RSocketClientBuilder rSocketClientBuilder() {
 		return new RSocketClientBuilder();
 	}
