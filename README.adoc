@@ -1,0 +1,19 @@
+= Spring Retrosocket
+
+image:https://github.com/spring-projects-experimental/spring-retrosocket/workflows/Spring%20Retrosocket%20build/badge.svg["Build Status"] 
+
+Spring Retrosocket aims to provide a Feign-like or Retrofit-like experience for declarative http://RSocket.io[RSocket]-based clients.
+
+== Documentation
+
+You can find the much more complete https://spring-projects-experimental.github.io/spring-retrosocket/[documentation here].
+
+== GitHub issues
+
+We choose not to use GitHub issues for general usage questions and support, preferring to use Issues solely to track bugs and enhancements. If you have a general usage question, please do not open a http://github.com/spring-projects-experimental/spring-retrosocket[GitHub issue], but use one of the other channels described below.
+
+If you are reporting a bug, please help speed up problem diagnosis by providing as much information as possible. Ideally, that would include a small sample project that reproduces the problem.
+
+== License
+
+This code is licensed under the https://www.apache.org/licenses/LICENSE-2.0[Apache License v2.0]
