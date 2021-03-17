@@ -85,8 +85,10 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 				List<Type> toProcess = new ArrayList<>();
 				toProcess.addAll(m.getParameterTypes());
 				toProcess.add(m.getReturnType());
+
 				if (m.getReturnType() != null && m.getReturnType().getNestedTypes() != null)
 					toProcess.addAll(m.getReturnType().getNestedTypes());
+
 				log.debug("================================================");
 				log.debug("nested types: " + m.getReturnType().getNestedTypes());
 				for (Type tp : toProcess) {
