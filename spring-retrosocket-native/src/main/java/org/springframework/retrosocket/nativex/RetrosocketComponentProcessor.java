@@ -79,26 +79,15 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 
 			////// lifted shamelessly from WebComponentProcessor in Spring Native itself
 			List<Method> mappings = type.getMethods(Method::isAtMapping);
-			log.info("the list of mappings is " + mappings.size() + " elements long. The mappings look like this: "
-				+ mappings.size());
+			log.info("found " + mappings.size() + " mapping(s) for Retrosocket interface " + type .getDottedName() +
+				": " + mappings);
 			for (Method m : mappings) {
 				List<Type> toProcess = new ArrayList<>();
 				toProcess.addAll(m.getParameterTypes());
 				toProcess.add(m.getReturnType());
-
-				if (m.getReturnType() != null && m.getReturnType().getNestedTypes() != null)
+				toProcess.addAll(m.getSignatureTypes(true));
+				if (m.getReturnType() != null && m.getReturnType().getNestedTypes() != null) {
 					toProcess.addAll(m.getReturnType().getNestedTypes());
-
-				log.debug("================================================");
-				log.debug("nested types: " + m.getReturnType().getNestedTypes());
-				for (Type tp : toProcess) {
-					log.debug("toProcess: " + tp.getName() + '=' + tp.getDottedName());
-				}
-
-
-				for (Type s : m.getSignatureTypes(true)) {
-					toProcess.add(s);
-					log.info("EXTRA: adding signature type " + s.getName() + '.');
 				}
 
 				for (Type t : toProcess) {
@@ -106,7 +95,6 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 					if (ignore(typename)) {
 						continue;
 					}
-
 					if (this.added.add(typename)) {
 						Set<String> added = context.addReflectiveAccessHierarchy(typename,
 							AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
