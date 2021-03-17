@@ -55,7 +55,7 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 			context.addReflectiveAccessHierarchy(n, AccessBits.ALL);
 		}
 
-		log.info("registering invariant types for " + className + ".");
+		log.debug("registering invariant types for " + className + ".");
 		this.invariantsRegistered.set(true);
 	}
 
