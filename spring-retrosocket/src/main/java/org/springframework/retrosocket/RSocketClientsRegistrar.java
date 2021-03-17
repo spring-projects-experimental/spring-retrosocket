@@ -7,6 +7,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -18,17 +19,21 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author Andy Clement
  */
 @Log4j2
 class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDefinitionRegistrar, BeanFactoryAware,
@@ -58,7 +63,6 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 		for (Class<?> clazz : (Class[]) attributes.get("basePackageClasses")) {
 			basePackages.add(ClassUtils.getPackageName(clazz));
 		}
-
 		if (basePackages.isEmpty()) {
 			basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
 		}
@@ -103,9 +107,26 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 	private ClassPathScanningCandidateComponentProvider buildScanner() {
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false,
 				this.environment) {
+
 			@Override
-			protected boolean isCandidateComponent(AnnotatedBeanDefinition metadata) {
-				return metadata.getMetadata().isIndependent() && !metadata.getMetadata().isAnnotation();
+			protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+				AnnotationMetadata metadata = beanDefinition.getMetadata();
+				boolean match = metadata.isIndependent();
+				if (log.isDebugEnabled()) {
+					log.debug("boolean isCandidateComponent(AnnotatedBeanDefinition "
+							+ beanDefinition.getBeanClassName() + "): " + match);
+				}
+				return true;
+			}
+
+			@Override
+			protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
+				boolean match = !metadataReader.getClassMetadata().isAnnotation();
+				if (log.isDebugEnabled()) {
+					log.debug("boolean isCandidateComponent(MetadataReader "
+							+ metadataReader.getClassMetadata().getClassName() + ") : " + match);
+				}
+				return match;
 			}
 		};
 		scanner.addIncludeFilter(new AnnotationTypeFilter(RSocketClient.class));

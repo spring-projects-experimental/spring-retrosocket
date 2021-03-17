@@ -144,6 +144,7 @@
                 <maven-deploy-plugin.deployZipUrl>
                     https://repo.spring.io/libs-release-local
                 </maven-deploy-plugin.deployZipUrl>
+
             </properties>
         </profile>
         <profile>
@@ -186,6 +187,10 @@
     </distributionManagement>
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
         </dependency>
@@ -197,15 +202,18 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <spring-boot.version>2.4.3</spring-boot.version>
-        <junit.version> 5.7.1 </junit.version>
+        <junit.version>5.7.1</junit.version>
+        <spring-native.version>0.9.0</spring-native.version>
     </properties>
     <modules>
         <module>spring-retrosocket</module>
         <module>spring-retrosocket-docs</module>
+        <module>spring-retrosocket-native</module>
         <!-- <module>spring-retrosocket-samples</module> -->
     </modules>
     <dependencyManagement>
         <dependencies>
+
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
@@ -218,12 +226,46 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework.experimental</groupId>
+                <artifactId>spring-native</artifactId>
+                <version>${spring-native.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.experimental</groupId>
+                <artifactId>spring-aot</artifactId>
+                <version>${spring-native.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.springframework.experimental</groupId>
+                    <artifactId>spring-aot-maven-plugin</artifactId>
+                    <version>${spring-native.version}</version>
+                    <executions>
+                        <execution>
+                            <id>test-generate</id>
+                            <goals>
+                                <goal>test-generate</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>generate</id>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+
+                    </configuration>
+                </plugin>
+                <plugin>
+
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>

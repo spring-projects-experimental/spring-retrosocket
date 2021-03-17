@@ -1,5 +1,7 @@
 package org.springframework.retrosocket;
 
+import org.springframework.stereotype.Indexed;
+
 import java.lang.annotation.*;
 
 /**
@@ -9,6 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@Indexed
 public @interface RSocketClient {
 
 }
