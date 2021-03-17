@@ -4,61 +4,39 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
 import org.apache.logging.log4j.message.ReusableMessageFactory;
 import org.springframework.nativex.hint.AccessBits;
-import org.springframework.nativex.type.ComponentProcessor;
-import org.springframework.nativex.type.NativeContext;
-import org.springframework.nativex.type.Type;
+import org.springframework.nativex.type.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-//
-//@ProxyHint(
-//	types = {
-//		GreetingClient.class,
-//		org.springframework.aop.SpringProxy.class,
-//		org.springframework.aop.framework.Advised.class,
-//		org.springframework.core.DecoratingProxy.class
-//	}
-//)
-//@TypeHint(
-//	typeNames = {
-//		"org.springframework.retrosocket.RSocketClientsRegistrar",
-//	},
-//	types = {
-//		Greeting.class,
-//		GreetingClient.class,
-//		ReusableMessageFactory.class,
-//		DefaultFlowMessageFactory.class
-//	})
-//@ResourceHint(patterns = "nativex/GreetingClient.class")
 
 /***
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author Andy Clement
  */
 @Log4j2
 public class RetrosocketComponentProcessor implements ComponentProcessor {
 
 	private static final String ANNOTATION_DN = "org.springframework.retrosocket.RSocketClient";
 
+	private final AtomicBoolean invariantsRegistered = new AtomicBoolean(false);
+
 	private boolean ifIsRSocketClientInterface(NativeContext nativeContext, String candidateClassName,
 			List<String> classifiers) {
-		// Type type = nativeContext.getTypeSystem().resolveDotted(candidateClassName,
-		// true);
-		boolean hasRsocketClient = classifiers.stream()
-				.anyMatch(annotationType -> annotationType.equals(ANNOTATION_DN));
-
-		return hasRsocketClient;
+		return classifiers.stream().anyMatch(annotationType -> annotationType.equals(ANNOTATION_DN));
 	}
 
 	@Override
 	public boolean handle(NativeContext nativeContext, String candidateClassName, List<String> classifiers) {
+		Type resolvedComponentType = nativeContext.getTypeSystem().resolveDotted(candidateClassName, true);
 
-		boolean handled = ifIsRSocketClientInterface(nativeContext, candidateClassName, classifiers);
+		boolean handled = null != resolvedComponentType
+				&& ifIsRSocketClientInterface(nativeContext, candidateClassName, classifiers);
 		log.info("handle(context, " + candidateClassName + ", " + String.join(",", classifiers) + "): " + handled);
 		return handled;
 	}
-
-	private final AtomicBoolean invariantsRegistered = new AtomicBoolean(false);
 
 	protected void registerInvariants(NativeContext context, String className) {
 
@@ -81,20 +59,64 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 		this.invariantsRegistered.set(true);
 	}
 
+	private final Set<String> added = new HashSet<>();
+
 	@Override
 	public void process(NativeContext context, String candidateClassName, List<String> classifiers) {
+
+		registerInvariants(context, candidateClassName);
+
 		Type type = context.getTypeSystem().resolveDotted(candidateClassName, true);
 		if (ifIsRSocketClientInterface(context, candidateClassName, classifiers)) {
-			registerInvariants(context, candidateClassName);
+
 			log.info("process(context, " + candidateClassName + ", " + String.join(",", classifiers) + "): "
 					+ type.getDottedName() + ".");
 			log.info("registering proxy and reflection for " + candidateClassName + '.');
 			context.addProxy(candidateClassName, org.springframework.aop.SpringProxy.class.getName(),
 					org.springframework.aop.framework.Advised.class.getName(),
 					org.springframework.core.DecoratingProxy.class.getName());
-
 			context.addReflectiveAccessHierarchy(type, AccessBits.ALL);
+
+			////// lifted shamelessly from WebComponentProcessor in Spring Native itself
+			List<Method> mappings = type.getMethods(Method::isAtMapping);
+			log.info("the list of mappings is " + mappings.size() + " elements long. The mappings look like this: "
+					+ mappings.size());
+			for (Method m : mappings) {
+				List<Type> toProcess = new ArrayList<>();
+				toProcess.addAll(m.getParameterTypes());
+				toProcess.add(m.getReturnType());
+				if (m.getReturnType() != null && m.getReturnType().getNestedTypes() != null)
+					toProcess.addAll(m.getReturnType().getNestedTypes());
+				log.debug("================================================");
+				log.debug("nested types: " + m.getReturnType().getNestedTypes());
+				for (Type tp : toProcess) {
+					log.debug("toProcess: " + tp.getName() + '=' + tp.getDottedName());
+				}
+
+				for (Type t : toProcess) {
+					String typename = t.getDottedName();
+					if (ignore(typename)) {
+						continue;
+					}
+
+					if (this.added.add(typename)) {
+						Set<String> added = context.addReflectiveAccessHierarchy(typename,
+								AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
+						analyze(context, type, added);
+					}
+				}
+			}
 		}
+	}
+
+	private void analyze(NativeContext imageContext, Type type, Set<String> added) {
+		log.info("------------------------------------");
+		log.info("analyze " + type.getDottedName());
+	}
+
+	private boolean ignore(String name) {
+		return (name.startsWith("java.") || name.startsWith("org.springframework.ui.")
+				|| name.startsWith("org.springframework.validation."));
 	}
 
 }
