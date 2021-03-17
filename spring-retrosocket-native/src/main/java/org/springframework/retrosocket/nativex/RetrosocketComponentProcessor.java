@@ -13,9 +13,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /***
- * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
- * @author Andy Clement
- */
+	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+	* @author Andy Clement
+	*/
 @Log4j2
 public class RetrosocketComponentProcessor implements ComponentProcessor {
 
@@ -24,7 +24,7 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 	private final AtomicBoolean invariantsRegistered = new AtomicBoolean(false);
 
 	private boolean ifIsRSocketClientInterface(NativeContext nativeContext, String candidateClassName,
-			List<String> classifiers) {
+																																												List<String> classifiers) {
 		return classifiers.stream().anyMatch(annotationType -> annotationType.equals(ANNOTATION_DN));
 	}
 
@@ -33,7 +33,7 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 		Type resolvedComponentType = nativeContext.getTypeSystem().resolveDotted(candidateClassName, true);
 
 		boolean handled = null != resolvedComponentType
-				&& ifIsRSocketClientInterface(nativeContext, candidateClassName, classifiers);
+			&& ifIsRSocketClientInterface(nativeContext, candidateClassName, classifiers);
 		log.info("handle(context, " + candidateClassName + ", " + String.join(",", classifiers) + "): " + handled);
 		return handled;
 	}
@@ -43,9 +43,9 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 		if (this.invariantsRegistered.get())
 			return;
 
-		String[] names = new String[] { "org.springframework.retrosocket.RSocketClientsRegistrar",
-				"org.springframework.retrosocket.RSocketClientFactoryBean" };
-		Class<?>[] types = new Class[] { ReusableMessageFactory.class, DefaultFlowMessageFactory.class };
+		String[] names = new String[]{"org.springframework.retrosocket.RSocketClientsRegistrar",
+			"org.springframework.retrosocket.RSocketClientFactoryBean"};
+		Class<?>[] types = new Class[]{ReusableMessageFactory.class, DefaultFlowMessageFactory.class};
 
 		for (Class<?> n : types) {
 			context.addReflectiveAccessHierarchy(n.getName(), AccessBits.ALL);
@@ -70,17 +70,17 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 		if (ifIsRSocketClientInterface(context, candidateClassName, classifiers)) {
 
 			log.info("process(context, " + candidateClassName + ", " + String.join(",", classifiers) + "): "
-					+ type.getDottedName() + ".");
+				+ type.getDottedName() + ".");
 			log.info("registering proxy and reflection for " + candidateClassName + '.');
 			context.addProxy(candidateClassName, org.springframework.aop.SpringProxy.class.getName(),
-					org.springframework.aop.framework.Advised.class.getName(),
-					org.springframework.core.DecoratingProxy.class.getName());
+				org.springframework.aop.framework.Advised.class.getName(),
+				org.springframework.core.DecoratingProxy.class.getName());
 			context.addReflectiveAccessHierarchy(type, AccessBits.ALL);
 
 			////// lifted shamelessly from WebComponentProcessor in Spring Native itself
 			List<Method> mappings = type.getMethods(Method::isAtMapping);
 			log.info("the list of mappings is " + mappings.size() + " elements long. The mappings look like this: "
-					+ mappings.size());
+				+ mappings.size());
 			for (Method m : mappings) {
 				List<Type> toProcess = new ArrayList<>();
 				toProcess.addAll(m.getParameterTypes());
@@ -93,6 +93,12 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 					log.debug("toProcess: " + tp.getName() + '=' + tp.getDottedName());
 				}
 
+
+				for (Type s : m.getSignatureTypes(true)) {
+					toProcess.add(s);
+					log.info("EXTRA: adding signature type " + s.getName() + '.');
+				}
+
 				for (Type t : toProcess) {
 					String typename = t.getDottedName();
 					if (ignore(typename)) {
@@ -101,7 +107,7 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 
 					if (this.added.add(typename)) {
 						Set<String> added = context.addReflectiveAccessHierarchy(typename,
-								AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
+							AccessBits.CLASS | AccessBits.DECLARED_METHODS | AccessBits.DECLARED_CONSTRUCTORS);
 						analyze(context, type, added);
 					}
 				}
@@ -116,7 +122,7 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 
 	private boolean ignore(String name) {
 		return (name.startsWith("java.") || name.startsWith("org.springframework.ui.")
-				|| name.startsWith("org.springframework.validation."));
+			|| name.startsWith("org.springframework.validation."));
 	}
 
 }
