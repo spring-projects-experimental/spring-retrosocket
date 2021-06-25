@@ -15,15 +15,6 @@ public class RetrosocketNativeConfiguration implements NativeConfiguration {
 
 	@Override
 	public List<HintDeclaration> computeHints(TypeSystem typeSystem) {
-
-		/*
-		 * if (!typeSystem.shouldRemoveXmlSupport()) { HintDeclaration ch = new
-		 * HintDeclaration(); ResourcesDescriptor sqlErrorCodes = new ResourcesDescriptor(
-		 * new String[] {"org/springframework/jdbc/support/sql-error-codes.xml"},false);
-		 * ch.addResourcesDescriptor(sqlErrorCodes); return Collections.singletonList(ch);
-		 * }
-		 */
-
 		return Collections.emptyList();
 	}
 
