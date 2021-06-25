@@ -203,7 +203,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <spring-boot.version>2.4.3</spring-boot.version>
         <junit.version>5.7.1</junit.version>
-        <spring-native.version>0.9.0</spring-native.version>
+        <spring-native.version>0.10.1-SNAPSHOT</spring-native.version>
     </properties>
     <modules>
         <module>spring-retrosocket</module>
@@ -242,7 +242,7 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
+            <!--    <plugin>
                     <groupId>org.springframework.experimental</groupId>
                     <artifactId>spring-aot-maven-plugin</artifactId>
                     <version>${spring-native.version}</version>
@@ -260,12 +260,8 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-
-                    </configuration>
-                </plugin>
+                </plugin>-->
                 <plugin>
-
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
