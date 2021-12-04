@@ -17,10 +17,10 @@ import org.springframework.util.Assert;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
- */
+	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+	*/
 @Log4j2
-class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> {
+public class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> {
 
 	private Class<?> type;
 
@@ -30,7 +30,7 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 		Map<String, RSocketRequester> rSocketRequestersInContext = context.getBeansOfType(RSocketRequester.class);
 		int rSocketRequestersCount = rSocketRequestersInContext.size();
 		Assert.state(rSocketRequestersCount > 0, () -> "there should be at least one "
-				+ RSocketRequester.class.getName() + " in the context. Please consider defining one.");
+			+ RSocketRequester.class.getName() + " in the context. Please consider defining one.");
 		RSocketRequester rSocketRequester = null;
 		Assert.notNull(clientInterface, "the client interface must be non-null");
 		Assert.notNull(context, () -> "the " + ListableBeanFactory.class.getName() + " interface must be non-null");
@@ -38,24 +38,24 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 		if (qualifier.isPresent()) {
 			String valueOfQualifierAnnotation = qualifier.getString(MergedAnnotation.VALUE);
 			Map<String, RSocketRequester> beans = BeanFactoryAnnotationUtils.qualifiedBeansOfType(context,
-					RSocketRequester.class, valueOfQualifierAnnotation);
+				RSocketRequester.class, valueOfQualifierAnnotation);
 			Assert.state(beans.size() == 1,
-					() -> "I need just one " + RSocketRequester.class.getName() + " but I got " + beans.keySet());
+				() -> "I need just one " + RSocketRequester.class.getName() + " but I got " + beans.keySet());
 			for (Map.Entry<String, RSocketRequester> entry : beans.entrySet()) {
 				rSocketRequester = entry.getValue();
 				if (log.isDebugEnabled()) {
 					log.debug("found " + rSocketRequester + " with bean name " + entry.getKey() + " for @"
-							+ RSocketClient.class.getName() + " interface " + clientInterface.getName() + '.');
+						+ RSocketClient.class.getName() + " interface " + clientInterface.getName() + '.');
 				}
 			}
 		}
 		else {
 			Assert.state(rSocketRequestersCount == 1, () -> "there should be no more and no less than one unqualified "
-					+ RSocketRequester.class.getName() + " instances in the context.");
+				+ RSocketRequester.class.getName() + " instances in the context.");
 			return rSocketRequestersInContext.values().iterator().next();
 		}
 		Assert.notNull(rSocketRequester, () -> "we could not find an " + RSocketRequester.class.getName()
-				+ " for the @RSocketClient interface " + clientInterface.getName() + '.');
+			+ " for the @RSocketClient interface " + clientInterface.getName() + '.');
 		return rSocketRequester;
 	}
 
@@ -66,6 +66,7 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 
 	@Override
 	public Object getObject() {
+		log.info("trying to build an RSocketClient for " + this.type + '.');
 		RSocketRequester rSocketRequester = forInterface(this.type, this.context);
 		RSocketClientBuilder clientBuilder = this.context.getBean(RSocketClientBuilder.class);
 		return clientBuilder.buildClientFor(this.type, rSocketRequester);
@@ -79,7 +80,7 @@ class RSocketClientFactoryBean implements BeanFactoryAware, FactoryBean<Object> 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		Assert.state(beanFactory instanceof ListableBeanFactory, () -> "the " + BeanFactory.class.getName()
-				+ " is not an instance of a " + ListableBeanFactory.class.getName());
+			+ " is not an instance of a " + ListableBeanFactory.class.getName());
 		this.context = (ListableBeanFactory) beanFactory;
 	}
 

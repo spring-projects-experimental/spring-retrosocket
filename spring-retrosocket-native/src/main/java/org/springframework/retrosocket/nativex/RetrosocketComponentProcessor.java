@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Andy Clement
  */
 @Log4j2
-public class RetrosocketComponentProcessor implements ComponentProcessor {
+public class RetrosocketComponentProcessor   {
 
 	private static final String ANNOTATION_DN = "org.springframework.retrosocket.RSocketClient";
 
@@ -28,7 +28,6 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 		return classifiers.stream().anyMatch(annotationType -> annotationType.equals(ANNOTATION_DN));
 	}
 
-	@Override
 	public boolean handle(NativeContext nativeContext, String candidateClassName, List<String> classifiers) {
 		Type resolvedComponentType = nativeContext.getTypeSystem().resolveDotted(candidateClassName, true);
 
@@ -61,7 +60,7 @@ public class RetrosocketComponentProcessor implements ComponentProcessor {
 
 	private final Set<String> added = new HashSet<>();
 
-	@Override
+
 	public void process(NativeContext context, String candidateClassName, List<String> classifiers) {
 
 		registerInvariants(context, candidateClassName);

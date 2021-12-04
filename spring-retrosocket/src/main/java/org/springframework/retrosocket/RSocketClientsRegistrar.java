@@ -2,15 +2,10 @@ package org.springframework.retrosocket;
 
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.*;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -22,32 +17,33 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Component;
+import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
- * @author Andy Clement
- */
+	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+	* @author Andy Clement
+	*/
 @Log4j2
-class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDefinitionRegistrar, BeanFactoryAware,
-		EnvironmentAware, ResourceLoaderAware {
-
-	private BeanFactory beanFactory;
+class RSocketClientsRegistrar implements
+	ResourceLoaderAware,
+	ImportBeanDefinitionRegistrar, EnvironmentAware {
 
 	private Environment environment;
-
 	private ResourceLoader resourceLoader;
 
 	private Set<String> getBasePackages(AnnotationMetadata importingClassMetadata) {
 		Map<String, Object> attributes = importingClassMetadata
-				.getAnnotationAttributes(EnableRSocketClients.class.getCanonicalName());
+			.getAnnotationAttributes(EnableRSocketClients.class.getCanonicalName());
 
 		Set<String> basePackages = new HashSet<>();
 		for (String pkg : (String[]) attributes.get("value")) {
@@ -66,47 +62,49 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 		if (basePackages.isEmpty()) {
 			basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
 		}
+		if (log.isDebugEnabled()) {
+			log.debug("the base packages are " + basePackages + '.');
+		}
 		return basePackages;
 	}
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
-			BeanNameGenerator importBeanNameGenerator) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
+		log.info("inside registerBeanDefinitions");
 		Collection<String> basePackages = getBasePackages(importingClassMetadata);
-		if (log.isDebugEnabled()) {
-			log.debug("scanning the following packages: "
-					+ StringUtils.arrayToDelimitedString(basePackages.toArray(new String[0]), ", "));
-		}
+
+		log.info("scanning the following packages: "
+			+ StringUtils.arrayToDelimitedString(basePackages.toArray(new String[0]), ", "));
+
 		ClassPathScanningCandidateComponentProvider scanner = this.buildScanner();
 		basePackages.forEach(basePackage -> scanner.findCandidateComponents(basePackage)//
-				.stream()//
-				.filter(cc -> cc instanceof AnnotatedBeanDefinition)//
-				.map(abd -> (AnnotatedBeanDefinition) abd)//
-				.forEach(beanDefinition -> {
-					AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
-					this.validateInterface(annotationMetadata);
-					this.registerRSocketClient(annotationMetadata, registry);
-				}));
+			.stream()//
+			.filter(cc -> cc instanceof AnnotatedBeanDefinition)//
+			.map(abd -> (AnnotatedBeanDefinition) abd)//
+			.forEach(beanDefinition -> {
+				log.info("found the bean definition: " + beanDefinition.getBeanClassName());
+				AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
+				this.validateInterface(annotationMetadata);
+				this.registerRSocketClient(annotationMetadata, registry);
+			}));
 	}
 
 	@SneakyThrows
 	private void validateInterface(AnnotationMetadata annotationMetadata) {
 		Assert.isTrue(annotationMetadata.isInterface(),
-				"the @" + RSocketClient.class.getName() + " annotation must be used only on an interface");
+			"the @" + RSocketClient.class.getName() + " annotation must be used only on an interface");
 		Class<?> clzz = Class.forName(annotationMetadata.getClassName());
 		ReflectionUtils.doWithMethods(clzz, method -> {
-			if (log.isDebugEnabled()) {
-				log.debug("validating " + clzz.getName() + "#" + method.getName());
-			}
+			log.info("validating " + clzz.getName() + "#" + method.getName());
 			MessageMapping annotation = method.getAnnotation(MessageMapping.class);
 			Assert.notNull(annotation, "you must use the @" + MessageMapping.class.getName()
-					+ " annotation on every method on " + clzz.getName() + '.');
+				+ " annotation on every method on " + clzz.getName() + '.');
+			log.info("it's valid!");
 		});
 	}
 
 	private ClassPathScanningCandidateComponentProvider buildScanner() {
-		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false,
-				this.environment) {
+		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false, this.environment) {
 
 			@Override
 			protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
@@ -114,7 +112,7 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 				boolean match = metadata.isIndependent();
 				if (log.isDebugEnabled()) {
 					log.debug("boolean isCandidateComponent(AnnotatedBeanDefinition "
-							+ beanDefinition.getBeanClassName() + "): " + match);
+						+ beanDefinition.getBeanClassName() + "): " + match);
 				}
 				return true;
 			}
@@ -124,7 +122,7 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 				boolean match = !metadataReader.getClassMetadata().isAnnotation();
 				if (log.isDebugEnabled()) {
 					log.debug("boolean isCandidateComponent(MetadataReader "
-							+ metadataReader.getClassMetadata().getClassName() + ") : " + match);
+						+ metadataReader.getClassMetadata().getClassName() + ") : " + match);
 				}
 				return match;
 			}
@@ -134,16 +132,17 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 		return scanner;
 	}
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+	private Object build(Class<?> clazzz, ListableBeanFactory beanFactory) {
+		return new RSocketClientBuilder()
+			.buildClientFor(clazzz, beanFactory.getBean(RSocketRequester.class));
 	}
+
+
 
 	@SneakyThrows
 	private void registerRSocketClient(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
-		String className = annotationMetadata.getClassName();
-		if (log.isDebugEnabled()) {
-			log.debug("trying to turn the interface " + className + " into an RSocketClientFactoryBean");
-		}
+
+ 	String className = annotationMetadata.getClassName();
 
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(RSocketClientFactoryBean.class);
 		definition.addPropertyValue("type", className);
@@ -155,27 +154,19 @@ class RSocketClientsRegistrar implements BeanFactoryPostProcessor, ImportBeanDef
 
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[0]);
 		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+
 	}
 
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
+		log.info("set the resourceLoader!");
 	}
 
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
+		log.info("set the environment!");
 	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
-
-	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		// log.info("postProcessBeanFactory");
-		// why does this never get called?
-	}
-
 }
+

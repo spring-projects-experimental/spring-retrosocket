@@ -11,6 +11,11 @@
     <artifactId>spring-retrosocket-native</artifactId>
     <dependencies>
         <dependency>
+            <groupId>org.springframework.retrosocket</groupId>
+            <artifactId>spring-retrosocket</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-rsocket</artifactId>
         </dependency>
