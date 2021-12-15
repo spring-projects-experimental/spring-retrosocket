@@ -1,5 +1,0 @@
-org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanNativeConfigurationProcessor =\
-  org.springframework.retrosocket.nativex.RetrosocketBeanNativeConfigurationProcessor
-
-org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor =\
-  org.springframework.retrosocket.nativex.RetrosocketBeanFactoryNativeConfigurationProcessor

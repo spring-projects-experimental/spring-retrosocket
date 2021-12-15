@@ -1,1 +1,3 @@
+org.springframework.aot.context.bootstrap.generator.infrastructure.nativex.BeanFactoryNativeConfigurationProcessor =\
+  org.springframework.retrosocket.nativex.RetrosocketBeanFactoryNativeConfigurationProcessor
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.springframework.retrosocket.RSocketClientAutoConfiguration

@@ -1,10 +1,10 @@
 package org.springframework.retrosocket;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
@@ -20,7 +20,10 @@ import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
@@ -85,14 +88,16 @@ public class RSocketClientBuilder {
 		return metadata;
 	}
 
-	public <T> T buildClientFor(Class<T> clazz, RSocketRequester rSocketRequester) {
-		Assert.notNull(rSocketRequester, "the requester must not be null");
-		Assert.notNull(clazz, "the Class must not be null");
-		ProxyFactoryBean pfb = new ProxyFactoryBean();
-		pfb.setTargetClass(clazz);
-		pfb.addInterface(clazz);
-		pfb.setAutodetectInterfaces(true);
-		pfb.addAdvice((MethodInterceptor) methodInvocation -> {
+	private static class RSocketClientMethodInterceptor implements MethodInterceptor {
+
+		private final RSocketRequester rSocketRequester;
+
+		RSocketClientMethodInterceptor(RSocketRequester rSocketRequester) {
+			this.rSocketRequester = rSocketRequester;
+		}
+
+		@Override
+		public Object invoke(MethodInvocation methodInvocation) throws Throwable {
 			Method method = methodInvocation.getMethod();
 			String methodName = method.getName();
 			Class<?> returnType = method.getReturnType();
@@ -142,20 +147,28 @@ public class RSocketClientBuilder {
 			}
 			// is there something more sensible to return?
 			return Mono.empty();
-		});
-
-		return (T) pfb.getObject();
-	}
-
-	private RSocketRequester.RequestSpec enrichMetadata(RSocketRequester.RequestSpec route,
-			Map<MimeType, Object> compositeMetadata) {
-		if (!compositeMetadata.isEmpty()) {
-			for (Map.Entry<MimeType, Object> entry : compositeMetadata.entrySet()) {
-				route = route.metadata(entry.getValue(), entry.getKey());
-			}
 		}
 
-		return route;
+		private RSocketRequester.RequestSpec enrichMetadata(RSocketRequester.RequestSpec route,
+				Map<MimeType, Object> compositeMetadata) {
+
+			if (!compositeMetadata.isEmpty()) {
+				for (Map.Entry<MimeType, Object> entry : compositeMetadata.entrySet()) {
+					route = route.metadata(entry.getValue(), entry.getKey());
+				}
+			}
+			return route;
+		}
+
+	}
+
+	public <T> T buildClientFor(Class<T> clazz, RSocketRequester rSocketRequester) {
+		log.info("trying to build client for " + clazz.getName() + "  with RsocketRequester "
+				+ (rSocketRequester == null));
+		Assert.notNull(rSocketRequester, "the requester must not be null");
+		Assert.notNull(clazz, "the Class must not be null");
+		MethodInterceptor methodInterceptor = new RSocketClientMethodInterceptor(rSocketRequester);
+		return (T) ProxyFactory.getProxy(clazz, methodInterceptor);
 	}
 
 }

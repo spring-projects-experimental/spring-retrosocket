@@ -3,7 +3,6 @@ package org.springframework.retrosocket;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.*;
@@ -16,11 +15,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -30,20 +25,55 @@ import java.util.Map;
 import java.util.Set;
 
 /**
-	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
-	* @author Andy Clement
-	*/
+ * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
+ * @author Andy Clement
+ */
 @Log4j2
-class RSocketClientsRegistrar implements
-	ResourceLoaderAware,
-	ImportBeanDefinitionRegistrar, EnvironmentAware {
+class RSocketClientsRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
 
 	private Environment environment;
+
 	private ResourceLoader resourceLoader;
+
+	@Override
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
+			BeanNameGenerator importBeanNameGenerator) {
+		Collection<String> basePackages = this.getBasePackages(importingClassMetadata);
+		ClassPathScanningCandidateComponentProvider scanner = this.buildScanner();
+		basePackages.forEach(basePackage -> scanner.findCandidateComponents(basePackage)//
+				.stream()//
+				.filter(cc -> cc instanceof AnnotatedBeanDefinition)//
+				.map(abd -> (AnnotatedBeanDefinition) abd)//
+				.forEach(beanDefinition -> {
+					AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
+					boolean isClient = annotationMetadata.getAnnotationTypes().stream()
+							.anyMatch(s -> s.equals(RSocketClient.class.getName()));
+					if (!isClient)
+						return;
+					this.registerClient(annotationMetadata, registry);
+				}));
+	}
+
+	@SneakyThrows
+	private void registerClient(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
+		String className = annotationMetadata.getClassName();
+		log.info("going to build a client for " + className);
+		Class<RSocketClientFactoryBean> rSocketClientFactoryBeanClass = RSocketClientFactoryBean.class;
+		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(rSocketClientFactoryBeanClass);
+		definition.addPropertyValue("type", className);
+		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+
+		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
+		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, className);
+		beanDefinition.setPrimary(true);
+		beanDefinition.setBeanClass(rSocketClientFactoryBeanClass);
+		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[0]);
+		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
+	}
 
 	private Set<String> getBasePackages(AnnotationMetadata importingClassMetadata) {
 		Map<String, Object> attributes = importingClassMetadata
-			.getAnnotationAttributes(EnableRSocketClients.class.getCanonicalName());
+				.getAnnotationAttributes(EnableRSocketClients.class.getCanonicalName());
 
 		Set<String> basePackages = new HashSet<>();
 		for (String pkg : (String[]) attributes.get("value")) {
@@ -62,69 +92,22 @@ class RSocketClientsRegistrar implements
 		if (basePackages.isEmpty()) {
 			basePackages.add(ClassUtils.getPackageName(importingClassMetadata.getClassName()));
 		}
-		if (log.isDebugEnabled()) {
-			log.debug("the base packages are " + basePackages + '.');
-		}
+
 		return basePackages;
 	}
 
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator) {
-		log.info("inside registerBeanDefinitions");
-		Collection<String> basePackages = getBasePackages(importingClassMetadata);
-
-		log.info("scanning the following packages: "
-			+ StringUtils.arrayToDelimitedString(basePackages.toArray(new String[0]), ", "));
-
-		ClassPathScanningCandidateComponentProvider scanner = this.buildScanner();
-		basePackages.forEach(basePackage -> scanner.findCandidateComponents(basePackage)//
-			.stream()//
-			.filter(cc -> cc instanceof AnnotatedBeanDefinition)//
-			.map(abd -> (AnnotatedBeanDefinition) abd)//
-			.forEach(beanDefinition -> {
-				log.info("found the bean definition: " + beanDefinition.getBeanClassName());
-				AnnotationMetadata annotationMetadata = beanDefinition.getMetadata();
-				this.validateInterface(annotationMetadata);
-				this.registerRSocketClient(annotationMetadata, registry);
-			}));
-	}
-
-	@SneakyThrows
-	private void validateInterface(AnnotationMetadata annotationMetadata) {
-		Assert.isTrue(annotationMetadata.isInterface(),
-			"the @" + RSocketClient.class.getName() + " annotation must be used only on an interface");
-		Class<?> clzz = Class.forName(annotationMetadata.getClassName());
-		ReflectionUtils.doWithMethods(clzz, method -> {
-			log.info("validating " + clzz.getName() + "#" + method.getName());
-			MessageMapping annotation = method.getAnnotation(MessageMapping.class);
-			Assert.notNull(annotation, "you must use the @" + MessageMapping.class.getName()
-				+ " annotation on every method on " + clzz.getName() + '.');
-			log.info("it's valid!");
-		});
-	}
-
 	private ClassPathScanningCandidateComponentProvider buildScanner() {
-		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false, this.environment) {
+		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false,
+				this.environment) {
 
 			@Override
 			protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-				AnnotationMetadata metadata = beanDefinition.getMetadata();
-				boolean match = metadata.isIndependent();
-				if (log.isDebugEnabled()) {
-					log.debug("boolean isCandidateComponent(AnnotatedBeanDefinition "
-						+ beanDefinition.getBeanClassName() + "): " + match);
-				}
-				return true;
+				return beanDefinition.getMetadata().isIndependent();
 			}
 
 			@Override
-			protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
-				boolean match = !metadataReader.getClassMetadata().isAnnotation();
-				if (log.isDebugEnabled()) {
-					log.debug("boolean isCandidateComponent(MetadataReader "
-						+ metadataReader.getClassMetadata().getClassName() + ") : " + match);
-				}
-				return match;
+			protected boolean isCandidateComponent(MetadataReader metadataReader) {
+				return !metadataReader.getClassMetadata().isAnnotation();
 			}
 		};
 		scanner.addIncludeFilter(new AnnotationTypeFilter(RSocketClient.class));
@@ -132,41 +115,30 @@ class RSocketClientsRegistrar implements
 		return scanner;
 	}
 
-	private Object build(Class<?> clazzz, ListableBeanFactory beanFactory) {
-		return new RSocketClientBuilder()
-			.buildClientFor(clazzz, beanFactory.getBean(RSocketRequester.class));
-	}
-
-
-
-	@SneakyThrows
-	private void registerRSocketClient(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
-
- 	String className = annotationMetadata.getClassName();
-
-		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(RSocketClientFactoryBean.class);
-		definition.addPropertyValue("type", className);
-		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-
-		AbstractBeanDefinition beanDefinition = definition.getBeanDefinition();
-		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, className);
-		beanDefinition.setPrimary(true);
-
-		BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className, new String[0]);
-		BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
-
-	}
-
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-		log.info("set the resourceLoader!");
 	}
 
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
-		log.info("set the environment!");
 	}
+
 }
 
+/*
+ *
+ * class Old {
+ *
+ *
+ * @SneakyThrows private void validateInterface(AnnotationMetadata annotationMetadata) {
+ * Assert.isTrue(annotationMetadata.isInterface(), "the @" + RSocketClient.class.getName()
+ * + " annotation must be used only on an interface"); Class<?> clzz =
+ * Class.forName(annotationMetadata.getClassName()); ReflectionUtils.doWithMethods(clzz,
+ * method -> { log.info("validating " + clzz.getName() + "#" + method.getName());
+ * MessageMapping annotation = method.getAnnotation(MessageMapping.class);
+ * Assert.notNull(annotation, "you must use the @" + MessageMapping.class.getName() +
+ * " annotation on every method on " + clzz.getName() + '.'); log.info(clzz.getName() +
+ * " is a valid client"); }); } }
+ */
