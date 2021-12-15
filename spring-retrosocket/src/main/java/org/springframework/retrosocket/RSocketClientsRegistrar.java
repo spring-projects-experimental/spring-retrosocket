@@ -57,7 +57,7 @@ class RSocketClientsRegistrar implements ImportBeanDefinitionRegistrar, Environm
 	@SneakyThrows
 	private void registerClient(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
 		String className = annotationMetadata.getClassName();
-		log.info("going to build a client for " + className);
+		log.debug("going to build a client for " + className);
 		Class<RSocketClientFactoryBean> rSocketClientFactoryBeanClass = RSocketClientFactoryBean.class;
 		BeanDefinitionBuilder definition = BeanDefinitionBuilder.genericBeanDefinition(rSocketClientFactoryBeanClass);
 		definition.addPropertyValue("type", className);

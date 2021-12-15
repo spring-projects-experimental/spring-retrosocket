@@ -26,9 +26,6 @@ public class RSocketClientFactoryBean<T> implements BeanFactoryAware, FactoryBea
 
 	private ListableBeanFactory context;
 
-	private RSocketRequester rSocketRequester;
-
-	// todo restore this so that the pairing works
 	private static RSocketRequester forInterface(Class<?> clientInterface, ListableBeanFactory context) {
 		Map<String, RSocketRequester> rSocketRequestersInContext = context.getBeansOfType(RSocketRequester.class);
 		int rSocketRequestersCount = rSocketRequestersInContext.size();
@@ -69,13 +66,10 @@ public class RSocketClientFactoryBean<T> implements BeanFactoryAware, FactoryBea
 
 	@Override
 	public T getObject() {
-
-		log.info("getObject()");
-		// RSocketRequester rSocketRequester = forInterface(this.type, this.context);
-		// RSocketClientBuilder clientBuilder =
-		// this.context.getBean(RSocketClientBuilder.class);
-		RSocketRequester rSocketRequester = RSocketRequester.builder().tcp("localhost", 8888);
-		RSocketClientBuilder clientBuilder = new RSocketClientBuilder();
+		RSocketRequester rSocketRequester = forInterface(this.type, this.context);
+		log.debug("getObject(): we have a valid RSocketRequester: " + (null != rSocketRequester));
+		RSocketClientBuilder clientBuilder = this.context.getBean(RSocketClientBuilder.class);
+		// RSocketClientBuilder clientBuilder = new RSocketClientBuilder();
 		return (T) clientBuilder.buildClientFor(this.type, rSocketRequester);
 	}
 
@@ -88,7 +82,7 @@ public class RSocketClientFactoryBean<T> implements BeanFactoryAware, FactoryBea
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		Assert.state(beanFactory instanceof ListableBeanFactory, () -> "the " + BeanFactory.class.getName()
 				+ " is not an instance of a " + ListableBeanFactory.class.getName());
-		log.info("got the bean factory " + beanFactory.getClass().getName());
+		log.debug("got the bean factory " + beanFactory.getClass().getName());
 		this.context = (ListableBeanFactory) beanFactory;
 	}
 

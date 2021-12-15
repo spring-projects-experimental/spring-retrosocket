@@ -111,12 +111,9 @@ public class RSocketClientBuilder {
 			Object payloadArgument = findPayloadArgument(arguments, parameters);
 			Map<MimeType, Object> compositeMetadata = findCompositeMetadata(arguments, parameters);
 
-			if (log.isDebugEnabled()) {
-				log.debug("invoking " + methodName + " accepting " + arguments.length + " argument(s) for route "
-						+ route + " with destination variables ("
-						+ StringUtils.arrayToDelimitedString(routeArguments, ", ") + ")" + '.' + " The payload is "
-						+ payloadArgument);
-			}
+			log.debug("invoking " + methodName + " accepting " + arguments.length + " argument(s) for route " + route
+					+ " with destination variables (" + StringUtils.arrayToDelimitedString(routeArguments, ", ") + ")"
+					+ '.' + " The payload is " + payloadArgument);
 
 			if (Mono.class.isAssignableFrom(returnType)) {
 				// special case for fire-and-forget
@@ -163,7 +160,7 @@ public class RSocketClientBuilder {
 	}
 
 	public <T> T buildClientFor(Class<T> clazz, RSocketRequester rSocketRequester) {
-		log.info("trying to build client for " + clazz.getName() + "  with RsocketRequester "
+		log.debug("trying to build client for " + clazz.getName() + "  with RsocketRequester "
 				+ (rSocketRequester == null));
 		Assert.notNull(rSocketRequester, "the requester must not be null");
 		Assert.notNull(clazz, "the Class must not be null");
