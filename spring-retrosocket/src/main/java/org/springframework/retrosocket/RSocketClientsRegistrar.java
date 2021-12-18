@@ -126,19 +126,3 @@ class RSocketClientsRegistrar implements ImportBeanDefinitionRegistrar, Environm
 	}
 
 }
-
-/*
- *
- * class Old {
- *
- *
- * @SneakyThrows private void validateInterface(AnnotationMetadata annotationMetadata) {
- * Assert.isTrue(annotationMetadata.isInterface(), "the @" + RSocketClient.class.getName()
- * + " annotation must be used only on an interface"); Class<?> clzz =
- * Class.forName(annotationMetadata.getClassName()); ReflectionUtils.doWithMethods(clzz,
- * method -> { log.info("validating " + clzz.getName() + "#" + method.getName());
- * MessageMapping annotation = method.getAnnotation(MessageMapping.class);
- * Assert.notNull(annotation, "you must use the @" + MessageMapping.class.getName() +
- * " annotation on every method on " + clzz.getName() + '.'); log.info(clzz.getName() +
- * " is a valid client"); }); } }
- */
